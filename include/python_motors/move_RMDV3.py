@@ -33,10 +33,11 @@ speed_write_msg_single = can.Message(is_extended_id=False,arbitration_id=single_
 can0.send(speed_write_msg_single)
 
 response = can0.recv(10.0)
-print("Motor temperature is " + str(response[1]) + " C")
-print("Torque current is " + str(((response[3] << 4) +response[2])*0.01) + " A")
-print("Motor speed is " + str((response[5] << 4) +response[4]) + " dps")
-print("Motor Angle is " + str((response[7] << 4) +response[6]) + " degrees")
+if response:
+    print("Motor temperature is " + str(response[1]) + " C")
+    print("Torque current is " + str(((response[3] << 4) +response[2])*0.01) + " A")
+    print("Motor speed is " + str((response[5] << 4) +response[4]) + " dps")
+    print("Motor Angle is " + str((response[7] << 4) +response[6]) + " degrees")
 
 
 # speed_write_msg_multi = can.Message(is_extended_id=False,arbitration_id=multi_id,data = [0xA2,0x00,0x00,0x00,0x10,0x27,0x00,0x00])
