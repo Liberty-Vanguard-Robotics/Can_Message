@@ -16,9 +16,11 @@ import can
 
 os.system('sudo ip link set can0 type can bitrate 1000000')
 os.system('sudo ifconfig can0 up')
+os.system("sudo ifconfig can0 txqueuelen 1000")
 
 os.system('sudo ip link set can1 type can bitrate 1000000')
 os.system('sudo ifconfig can1 up')
+os.system("sudo ifconfig can1 txqueuelen 1000")
 
 can0 = can.interface.Bus(channel= 'can0', bustype = 'socketcan')
 can1 = can.interface.Bus(channel= 'can1', bustype = 'socketcan')
@@ -33,9 +35,9 @@ joysticks = {}
 # Below are the axes and buttons associated with the xbox series x controller
 ljoy_hor_axis = 0
 ljoy_ver_axis = 1
-rjoy_hor_axis = 2
-rjoy_ver_axis = 3
-ltrigger_axis = 4
+rjoy_hor_axis = 3
+rjoy_ver_axis = 4
+ltrigger_axis = 2
 rtrigger_axis = 5
 
 a_button = 0
@@ -62,10 +64,15 @@ lback_id = 0x146
 
 #For now, I am going to manually set the max speed.
 #The goal is that later down the line, you should be able to use the d-pad to change the max speed anyways
-max_speed = 8000 #This translates to 80dps
+max_speed = 16000 #This translates to 80dps
 
 # I always to specify the starting values for these axes for future reference
 trigger_axis_start = -1
+
+rtrigger_bool = 0
+ltrigger_bool = 0
+rb_bool = 0
+lb_bool = 0
 
 done = 1
 while done:
@@ -81,8 +88,8 @@ while done:
             print(f"Joystick {event.instance_id} disconnected")
         
     for joystick in joysticks.values():
-        name = joystick.get_name()
-        print(name)
+        # name = joystick.get_name()
+        # print(name)
         """
         At the present moment, I am only concerned with the forwards, backwards, and spinning motion
         The sequence of events should be as follows.
@@ -98,10 +105,12 @@ while done:
         5 - No buttons pressed = no movement
         """
         axes = joystick.get_numaxes()
-        if axes == 5: #Check to make sure it is the normal operation for xbox controller
-            if joystick.get_axis(rtrigger_axis) > trigger_axis_start: #Check if right trigger has been pressed
+        if axes > 1: #Check to make sure it is the normal operation for xbox controller
+            if (joystick.get_axis(rtrigger_axis) > trigger_axis_start) & (rtrigger_bool == 0): #Check if right trigger has been pressed
+                rtrigger_bool = 1
                 print("Right motors forward") #Debug line
                 rtrigger_axis_value = joystick.get_axis(rtrigger_axis)
+                #print(rtrigger_axis_value)
                 can0.send(rmdv3.rmdv3_set_speed(rfront_id,rtrigger_axis_value,max_speed))
                 can0.send(rmdv3.rmdv3_set_speed(rcen_id,rtrigger_axis_value,max_speed))
                 can0.send(rmdv3.rmdv3_set_speed(rback_id,rtrigger_axis_value,max_speed))
@@ -109,8 +118,9 @@ while done:
                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,-rtrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,-rtrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lback_id,-rtrigger_axis_value,max_speed))
-            elif joystick.get_button(rb_button):
+            elif (joystick.get_button(rb_button)) & (rb_bool == 0):
                 print("Right motors backward") #Debug line
+                rb_bool = 1
                 if joystick.get_axis(ltrigger_axis) > trigger_axis_start:
                     print("Left motors forward")
                     ltrigger_axis_value = joystick.get_axis(ltrigger_axis)
@@ -122,14 +132,16 @@ while done:
                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,-ltrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(rback_id,-ltrigger_axis_value,max_speed))
                 else:
-                    back_speed = -0.25 #This is just arbitarily decided
+                    back_speed = -0.75 #This is just arbitarily decided
                     can0.send(rmdv3.rmdv3_set_speed(rfront_id,back_speed,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,back_speed,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(rback_id,back_speed,max_speed))
 
-            if joystick.get_axis(ltrigger_axis) > trigger_axis_start: #Check if right trigger has been pressed
-                print("Right motors forward") #Debug line
+            if (joystick.get_axis(ltrigger_axis) > trigger_axis_start) & (ltrigger_bool == 0): #Check if right trigger has been pressed
+                print("Left motors forward") #Debug line
+                ltrigger_bool = 1
                 ltrigger_axis_value = joystick.get_axis(ltrigger_axis)
+                print(ltrigger_axis_value)
                 can0.send(rmdv3.rmdv3_set_speed(lfront_id,ltrigger_axis_value,max_speed))
                 can0.send(rmdv3.rmdv3_set_speed(lcen_id,ltrigger_axis_value,max_speed))
                 can0.send(rmdv3.rmdv3_set_speed(lback_id,ltrigger_axis_value,max_speed))
@@ -137,8 +149,9 @@ while done:
                     can0.send(rmdv3.rmdv3_set_speed(rfront_id,-ltrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,-ltrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(rback_id,-ltrigger_axis_value,max_speed))
-            elif joystick.get_button(lb_button):
+            elif (joystick.get_button(lb_button)) & (lb_bool == 0):
                 print("Right motors backward") #Debug line
+                lb_bool = 1
                 if joystick.get_axis(rtrigger_axis) > trigger_axis_start:
                     print("Left motors forward")
                     rtrigger_axis_value = joystick.get_axis(rtrigger_axis)
@@ -150,13 +163,20 @@ while done:
                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,-rtrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lback_id,-rtrigger_axis_value,max_speed))
                 else:
-                    back_speed = -0.25 #This is just arbitarily decided
+                    back_speed = -0.75 #This is just arbitarily decided
                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,back_speed,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,back_speed,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lback_id,back_speed,max_speed))
+            
 
             else:
-                print("Error wrong number of joystick axes detected")
+                #print("Error wrong number of joystick axes detected")
+                rtrigger_bool = 0
+                ltrigger_bool = 0
+                rb_bool = 0
+                lb_bool = 0
+            
+            time.sleep(0.5)
 
         
 
@@ -197,3 +217,6 @@ while done:
 #     print(name)
 
 pygame.quit()
+
+os.system('sudo ifconfig can0 down')
+os.system('sudo ifconfig can1 down')

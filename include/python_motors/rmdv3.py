@@ -33,6 +33,8 @@ def rmdv3_set_speed(motor_id,axis,max_speed,axis_start=-1,byte_length=4): #I'm s
     if speed < 0:
         speed = neg_int(speed,byte_length)
     #If it isn't negative, we just have to split it up into bytes to use
+    speed = int(speed)
+    #print(type(speed))
     speed_bytes = int.to_bytes(speed,length=byte_length,byteorder='little',signed=True)
     #The big order being 'little' sets the array so that the most significant bit is now at the end
     
@@ -43,6 +45,7 @@ def rmdv3_set_speed(motor_id,axis,max_speed,axis_start=-1,byte_length=4): #I'm s
     msg_data[7] = speed_bytes[3]
 
     speed_msg = can.Message(is_extended_id=False,arbitration_id=motor_id,data= msg_data)
+    print(speed_msg)
 
     return speed_msg
     
