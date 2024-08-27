@@ -75,6 +75,111 @@ rb_bool = 0
 lb_bool = 0
 
 done = 1
+# while done:
+#     for event in pygame.event.get():
+#         if event.type == pygame.JOYDEVICEREMOVED:
+#             done = 0
+#         if event.type == pygame.JOYDEVICEADDED:
+#             joy = pygame.joystick.Joystick(event.device_index)
+#             joysticks[joy.get_instance_id()] = joy
+#             print(f"Joystick {joy.get_instance_id()} connencted")
+#         if event.type == pygame.JOYDEVICEREMOVED:
+#             del joysticks[event.instance_id]
+#             print(f"Joystick {event.instance_id} disconnected")
+        
+#     for joystick in joysticks.values():
+#         # name = joystick.get_name()
+#         # print(name)
+#         """
+#         At the present moment, I am only concerned with the forwards, backwards, and spinning motion
+#         The sequence of events should be as follows.
+#         1 - If right trigger is pressed, read speed value and set right motors to that speed.
+#             In this case, the right bumper should be ignored.
+#             If the left bumper is pressed, set the speed of the left motors to match the right motors but opposite direction
+#         2 - If right bumper is pressed, go backwards at some constant speed.
+#             Right trigger should be ignored.
+#             If left trigger is pressed, make left motors go forward
+#             reset right motors to match speed of left motors
+#         3 - copy right trigger sequence for left trigger
+#         4 - copy right bumper sequence for left bumper
+#         5 - No buttons pressed = no movement
+#         """
+#         axes = joystick.get_numaxes()
+#         if axes > 1: #Check to make sure it is the normal operation for xbox controller
+#             if (joystick.get_axis(rtrigger_axis) > trigger_axis_start) & (rtrigger_bool == 0): #Check if right trigger has been pressed
+#                 rtrigger_bool = 1
+#                 print("Right motors forward") #Debug line
+#                 rtrigger_axis_value = joystick.get_axis(rtrigger_axis)
+#                 #print(rtrigger_axis_value)
+#                 can0.send(rmdv3.rmdv3_set_speed(rfront_id,rtrigger_axis_value,max_speed))
+#                 can0.send(rmdv3.rmdv3_set_speed(rcen_id,rtrigger_axis_value,max_speed))
+#                 can0.send(rmdv3.rmdv3_set_speed(rback_id,rtrigger_axis_value,max_speed))
+#                 if joystick.get_button(lb_button):
+#                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,-rtrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,-rtrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(lback_id,-rtrigger_axis_value,max_speed))
+#             elif (joystick.get_button(rb_button)) & (rb_bool == 0):
+#                 print("Right motors backward") #Debug line
+#                 rb_bool = 1
+#                 if joystick.get_axis(ltrigger_axis) > trigger_axis_start:
+#                     print("Left motors forward")
+#                     ltrigger_axis_value = joystick.get_axis(ltrigger_axis)
+#                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,ltrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,ltrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(lback_id,ltrigger_axis_value,max_speed))
+
+#                     can0.send(rmdv3.rmdv3_set_speed(rfront_id,-ltrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,-ltrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(rback_id,-ltrigger_axis_value,max_speed))
+#                 else:
+#                     back_speed = -0.75 #This is just arbitarily decided
+#                     can0.send(rmdv3.rmdv3_set_speed(rfront_id,back_speed,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,back_speed,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(rback_id,back_speed,max_speed))
+
+#             if (joystick.get_axis(ltrigger_axis) > trigger_axis_start) & (ltrigger_bool == 0): #Check if right trigger has been pressed
+#                 print("Left motors forward") #Debug line
+#                 ltrigger_bool = 1
+#                 ltrigger_axis_value = joystick.get_axis(ltrigger_axis)
+#                 print(ltrigger_axis_value)
+#                 can0.send(rmdv3.rmdv3_set_speed(lfront_id,ltrigger_axis_value,max_speed))
+#                 can0.send(rmdv3.rmdv3_set_speed(lcen_id,ltrigger_axis_value,max_speed))
+#                 can0.send(rmdv3.rmdv3_set_speed(lback_id,ltrigger_axis_value,max_speed))
+#                 if joystick.get_button(rb_button):
+#                     can0.send(rmdv3.rmdv3_set_speed(rfront_id,-ltrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,-ltrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(rback_id,-ltrigger_axis_value,max_speed))
+#             elif (joystick.get_button(lb_button)) & (lb_bool == 0):
+#                 print("Right motors backward") #Debug line
+#                 lb_bool = 1
+#                 if joystick.get_axis(rtrigger_axis) > trigger_axis_start:
+#                     print("Left motors forward")
+#                     rtrigger_axis_value = joystick.get_axis(rtrigger_axis)
+#                     can0.send(rmdv3.rmdv3_set_speed(rfront_id,rtrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,rtrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(rback_id,rtrigger_axis_value,max_speed))
+
+#                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,-rtrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,-rtrigger_axis_value,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(lback_id,-rtrigger_axis_value,max_speed))
+#                 else:
+#                     back_speed = -0.75 #This is just arbitarily decided
+#                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,back_speed,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,back_speed,max_speed))
+#                     can0.send(rmdv3.rmdv3_set_speed(lback_id,back_speed,max_speed))
+            
+
+#             else:
+#                 #print("Error wrong number of joystick axes detected")
+#                 rtrigger_bool = 0
+#                 ltrigger_bool = 0
+#                 rb_bool = 0
+#                 lb_bool = 0
+            
+#             time.sleep(0.5)
+
+variation = 0.15 #This is the amount of variation between the old and new that merits a CAN message
+                 #This could be decreased to increase efficency (may crash the program if too low)
 while done:
     for event in pygame.event.get():
         if event.type == pygame.JOYDEVICEREMOVED:
@@ -106,22 +211,28 @@ while done:
         """
         axes = joystick.get_numaxes()
         if axes > 1: #Check to make sure it is the normal operation for xbox controller
-            if (joystick.get_axis(rtrigger_axis) > trigger_axis_start) & (rtrigger_bool == 0): #Check if right trigger has been pressed
-                rtrigger_bool = 1
+
+            #First, get all of the axis values
+            rtrigger_axis_value = joystick.get_axis(rtrigger_axis)
+            ltrigger_axis_value = joystick.get_axis(ltrigger_axis)
+            rb_button_value = joystick.get_button(rb_button)
+            lb_button_value = joystick.get_button(lb_button)
+            time.sleep(0.01)
+            
+            if (abs(rtrigger_axis_value-joystick.get_axis(rtrigger_axis))<variation): #Check if right trigger has been pressed
                 print("Right motors forward") #Debug line
                 rtrigger_axis_value = joystick.get_axis(rtrigger_axis)
                 #print(rtrigger_axis_value)
                 can0.send(rmdv3.rmdv3_set_speed(rfront_id,rtrigger_axis_value,max_speed))
                 can0.send(rmdv3.rmdv3_set_speed(rcen_id,rtrigger_axis_value,max_speed))
                 can0.send(rmdv3.rmdv3_set_speed(rback_id,rtrigger_axis_value,max_speed))
-                if joystick.get_button(lb_button):
+                if (abs(joystick.get_button(lb_button)-lb_button_value)<variation):
                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,-rtrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,-rtrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lback_id,-rtrigger_axis_value,max_speed))
-            elif (joystick.get_button(rb_button)) & (rb_bool == 0):
+            elif (abs(rb_button_value-joystick.get_button(rb_button))<variation):
                 print("Right motors backward") #Debug line
-                rb_bool = 1
-                if joystick.get_axis(ltrigger_axis) > trigger_axis_start:
+                if (abs(joystick.get_axis(ltrigger_axis)-ltrigger_axis_value)<variation):
                     print("Left motors forward")
                     ltrigger_axis_value = joystick.get_axis(ltrigger_axis)
                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,ltrigger_axis_value,max_speed))
@@ -137,22 +248,20 @@ while done:
                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,back_speed,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(rback_id,back_speed,max_speed))
 
-            if (joystick.get_axis(ltrigger_axis) > trigger_axis_start) & (ltrigger_bool == 0): #Check if right trigger has been pressed
+            if (abs(joystick.get_axis(ltrigger_axis)-ltrigger_axis_value)<variation): #Check if right trigger has been pressed
                 print("Left motors forward") #Debug line
-                ltrigger_bool = 1
                 ltrigger_axis_value = joystick.get_axis(ltrigger_axis)
-                print(ltrigger_axis_value)
+                #print(ltrigger_axis_value)
                 can0.send(rmdv3.rmdv3_set_speed(lfront_id,ltrigger_axis_value,max_speed))
                 can0.send(rmdv3.rmdv3_set_speed(lcen_id,ltrigger_axis_value,max_speed))
                 can0.send(rmdv3.rmdv3_set_speed(lback_id,ltrigger_axis_value,max_speed))
-                if joystick.get_button(rb_button):
+                if (abs(joystick.get_button(rb_button)-rb_button_value)<variation):
                     can0.send(rmdv3.rmdv3_set_speed(rfront_id,-ltrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(rcen_id,-ltrigger_axis_value,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(rback_id,-ltrigger_axis_value,max_speed))
-            elif (joystick.get_button(lb_button)) & (lb_bool == 0):
+            elif (abs(lb_button_value-joystick.get_button(lb_button))<variation):
                 print("Right motors backward") #Debug line
-                lb_bool = 1
-                if joystick.get_axis(rtrigger_axis) > trigger_axis_start:
+                if (abs(joystick.get_axis(rtrigger_axis)-rtrigger_axis_value)<variation):
                     print("Left motors forward")
                     rtrigger_axis_value = joystick.get_axis(rtrigger_axis)
                     can0.send(rmdv3.rmdv3_set_speed(rfront_id,rtrigger_axis_value,max_speed))
@@ -167,18 +276,7 @@ while done:
                     can0.send(rmdv3.rmdv3_set_speed(lfront_id,back_speed,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lcen_id,back_speed,max_speed))
                     can0.send(rmdv3.rmdv3_set_speed(lback_id,back_speed,max_speed))
-            
 
-            else:
-                #print("Error wrong number of joystick axes detected")
-                rtrigger_bool = 0
-                ltrigger_bool = 0
-                rb_bool = 0
-                lb_bool = 0
-            
-            time.sleep(0.5)
-
-        
 
 
 # for event in pygame.event.get():

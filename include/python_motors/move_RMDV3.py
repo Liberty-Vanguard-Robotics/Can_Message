@@ -28,7 +28,7 @@ can0.send(reset_msg)
 print(can0.recv(2.0))
 
 #Make send and receive messages
-speed_write_msg_single = can.Message(is_extended_id=False,arbitration_id=single_id,data = [0xA2,0x00,0x00,0x00,0x10,0x27,0x00,0x00])
+speed_write_msg_single = can.Message(is_extended_id=False,arbitration_id=single_id,data = [0xA2,0x00,0x00,0x00,0xAA,0x27,0x00,0x00])
 
 can0.send(speed_write_msg_single)
 
