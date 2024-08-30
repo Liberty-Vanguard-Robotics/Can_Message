@@ -23,16 +23,40 @@ single_id = 0x141
 
 
 #System Reset
-reset_msg = can.Message(is_extended_id=False,arbitration_id=single_id,data= [0x76,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
-can0.send(reset_msg)
+# reset_msg = can.Message(is_extended_id=False,arbitration_id=single_id,data= [0x76,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
+# can0.send(reset_msg)
+# print(can0.recv(2.0))
+
+#Read CAN ID
+read_msg = can.Message(is_extended_id=False,arbitration_id=multi_id,data= [0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x11])
+can0.send(read_msg)
 print(can0.recv(2.0))
 
 #Make send and receive messages
-speed_write_msg_single = can.Message(is_extended_id=False,arbitration_id=single_id,data = [0xA2,0x00,0x00,0x00,0xAA,0x27,0x00,0x00])
+speed_write_msg_single = can.Message(is_extended_id=False,arbitration_id=single_id,data = [0xA2,0x00,0x00,0x00,0x27,0x27,0x00,0x00])
 
 can0.send(speed_write_msg_single)
 
 response = can0.recv(10.0)
+print(response)
+
+#time.sleep(2)
+
+# motor_stop = can.Message(is_extended_id=False,arbitration_id=single_id,data = [0x81,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
+
+# can0.send(motor_stop)
+
+# response = can0.recv(5.0)
+# print(response)
+
+time.sleep(2)
+
+speed_write_msg_single = can.Message(is_extended_id=False,arbitration_id=single_id,data = [0xA2,0x00,0x00,0x00,0xFF,0x27,0x00,0xAA])
+
+can0.send(speed_write_msg_single)
+
+response = can0.recv(10.0)
+print(response)
 # if response:
 #     print("Motor temperature is " + str(response[1]) + " C")
 #     print("Torque current is " + str(((response[3] << 4) +response[2])*0.01) + " A")
@@ -40,7 +64,7 @@ response = can0.recv(10.0)
 #     print("Motor Angle is " + str((response[7] << 4) +response[6]) + " degrees")
 
 
-# speed_write_msg_multi = can.Message(is_extended_id=False,arbitration_id=multi_id,data = [0xA2,0x00,0x00,0x00,0x10,0x27,0x00,0x00])
+# speed_write_msg_multi = can.Message(is_extended_id=False,arbitration_id=multi_id,data = [0xA2,0x00,0x00,0x00,0x00,0x27,0x00,0x00])
 
 # can0.send(speed_write_msg_multi)
 
@@ -48,12 +72,13 @@ response = can0.recv(10.0)
 # print(response_multi)
 
 #Reset the speed to 0
-time.sleep(5) #Delay 5 seconds before stopping the motor
+time.sleep(2) #Delay 5 seconds before stopping the motor
 speed_0_msg = can.Message(is_extended_id=False,arbitration_id=single_id,data = [0xA2,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
 
 can0.send(speed_0_msg)
 
 response = can0.recv(10.0)
+print(response)
 # print("Motor temperature is " + str(response[1]) + " C")
 # print("Torque current is " + str(((response[3] << 4) +response[2])*0.01) + " A")
 # print("Motor speed is " + str((response[5] << 4) +response[4]) + " dps")
