@@ -16,7 +16,7 @@ def neg_int(int_num,byte_length):
     speed_bytes = int.to_bytes(int_num,length=byte_length,byteorder='little',signed=True)
     return speed_bytes
 
-def rmdv3_set_speed(motor_id,axis,max_speed,axis_start=-1,byte_length=4): #I'm start the axis_start value with a default of -1
+def rmdv2_set_speed(motor_id,axis,max_speed,axis_start=-1,byte_length=4): #I'm start the axis_start value with a default of -1
     #Notice the default byte length is 4. The RMDV3 motors should always accept 4 bytes
     
     # This base data is defined in the RMD V3 communication protocol.
