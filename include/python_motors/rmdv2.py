@@ -46,5 +46,5 @@ def rmdv2_set_speed(motor_id,axis,max_speed,axis_start=-1,byte_length=4): #I'm s
     speed_msg = can.Message(is_extended_id=False,arbitration_id=motor_id,data= msg_data)
     print(speed_msg)
 
-    return speed_bytes
+    return speed_msg
     
