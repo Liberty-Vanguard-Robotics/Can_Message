@@ -53,8 +53,8 @@ def main():
     can0 = setup_can_interface('can0')
 
     # Define current CAN ID and desired new CAN ID
-    current_id = 0x141  # Replace this with your current motor CAN ID
-    new_id = 0x05      # New CAN ID that you want to set
+    current_id = 0x032  # Replace this with your current motor CAN ID
+    new_id = 0x141     # New CAN ID that you want to set
 
     # Set the new CAN ID permanently
     set_motor_can_id(can0, current_id, new_id)
@@ -64,6 +64,7 @@ def main():
 
     # Shutdown CAN interface
     shutdown_can_interface('can0')
+    shutdown_can_interface('can1')
 
 if __name__ == "__main__":
     main()
