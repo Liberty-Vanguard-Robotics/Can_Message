@@ -183,9 +183,9 @@ while done:
                     can1.send(rmdv3.rmdv3_set_speed(lback_id,-((rtrigger_axis_value+1)/2),max_speed,button_start))
                 else:
                     back_speed = -0.75 #This is just arbitarily decided
-                    can1.send(rmdv3.rmdv3_set_speed(lfront_id,back_speed,max_speed))
-                    can1.send(rmdv3.rmdv3_set_speed(lcen_id,back_speed,max_speed))
-                    can1.send(rmdv3.rmdv3_set_speed(lback_id,back_speed,max_speed))
+                    can1.send(rmdv3.rmdv3_set_speed(lfront_id,back_speed,max_speed,button_start))
+                    can1.send(rmdv3.rmdv3_set_speed(lcen_id,back_speed,max_speed,button_start))
+                    can1.send(rmdv3.rmdv3_set_speed(lback_id,back_speed,max_speed,button_start))
             
             
             time.sleep(0.5)
