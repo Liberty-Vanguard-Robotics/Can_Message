@@ -40,14 +40,16 @@ def main():
     can0 = setup_can_interface('can0')
 
     # Define the CAN ID of the motor you want to turn on
-    motor_id = 0x05  # Replace this with the correct CAN ID of your motor
+    motor_id = 0x032  # Replace this with the correct CAN ID of your motor
     can_id = 0x140 + motor_id  # Calculate the CAN ID with the base offset
 
     # Turn on the motor
     turn_on_motor(can0, can_id)
 
     # Optionally, you might want to keep the interface open or close it after the command
-    # shutdown_can_interface('can0')
+    shutdown_can_interface('can0')
+    shutdown_can_interface('can1')
+
 
 if __name__ == "__main__":
     main()
