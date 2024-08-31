@@ -49,9 +49,8 @@ def stop_motor(bus, can_id):
         print(f"Failed to stop motor with CAN ID {can_id - 0x140}")
 
 def main():
-    # Setup CAN interfaces
+    # Setup CAN interface for can0
     can0 = setup_can_interface('can0')
-    can1 = setup_can_interface('can1')
 
     # Define current CAN ID and desired new CAN ID
     current_id = 0x01  # Replace this with your current motor CAN ID
@@ -63,9 +62,8 @@ def main():
     # Optionally, stop the motor as a precaution
     stop_motor(can0, 0x140 + new_id)
 
-    # Shutdown CAN interfaces
+    # Shutdown CAN interface
     shutdown_can_interface('can0')
-    shutdown_can_interface('can1')
 
 if __name__ == "__main__":
     main()
