@@ -53,21 +53,15 @@ def main():
     can0 = setup_can_interface('can0')
     can1 = setup_can_interface('can1')
 
-    # List of current and new CAN IDs for each motor
-    motors = [
-        {"current_id": 0x01, "new_id": 0x02},
-        {"current_id": 0x03, "new_id": 0x04},
-        # Add more motors as needed
-    ]
+    # Define current CAN ID and desired new CAN ID
+    current_id = 0x01  # Replace this with your current motor CAN ID
+    new_id = 0x05      # New CAN ID that you want to set
 
-    # Iterate over each motor and set the new CAN ID permanently
-    for motor in motors:
-        set_motor_can_id(can0, motor["current_id"], motor["new_id"])
-        time.sleep(1)  # Small delay between setting IDs for different motors
+    # Set the new CAN ID permanently
+    set_motor_can_id(can0, current_id, new_id)
 
-    # Optionally, stop all motors as a precaution
-    for motor in motors:
-        stop_motor(can0, 0x140 + motor["new_id"])
+    # Optionally, stop the motor as a precaution
+    stop_motor(can0, 0x140 + new_id)
 
     # Shutdown CAN interfaces
     shutdown_can_interface('can0')
