@@ -19,15 +19,25 @@ def send_can_message(bus, arbitration_id, data):
     return bus.recv(2.0)
 
 def set_motor_can_id(bus, current_id, new_id):
-    """Set the CAN ID of the motor."""
+    """Set the CAN ID of the motor and save it permanently."""
     current_can_id = 0x140 + current_id
     new_can_id_data = [0x81, new_id, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
     
+    # Set the new CAN ID
     response = send_can_message(bus, current_can_id, new_can_id_data)
     if response:
         print(f"CAN ID of motor {current_id} set to {new_id}. Response: {response}")
     else:
         print(f"Failed to set CAN ID for motor {current_id}")
+        return
+    
+    # Save the new CAN ID to NVM to make it permanent
+    save_command = [0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+    response = send_can_message(bus, 0x140 + new_id, save_command)
+    if response:
+        print(f"New CAN ID {new_id} saved to motor permanently. Response: {response}")
+    else:
+        print(f"Failed to save new CAN ID {new_id} permanently")
 
 def stop_motor(bus, can_id):
     """Stop the motor by setting speed to 0."""
@@ -50,7 +60,7 @@ def main():
         # Add more motors as needed
     ]
 
-    # Iterate over each motor and set the new CAN ID
+    # Iterate over each motor and set the new CAN ID permanently
     for motor in motors:
         set_motor_can_id(can0, motor["current_id"], motor["new_id"])
         time.sleep(1)  # Small delay between setting IDs for different motors
