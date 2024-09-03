@@ -16,8 +16,7 @@ can1 = can.interface.Bus(channel= 'can1', bustype = 'socketcan')
 #Make message for moving motor
 
 #Multi motor command sending
-multi_id = 0x280
-
+multi_id = 0x300
 #Single motor command sending
 single_id = 0x141
 
@@ -28,7 +27,7 @@ single_id = 0x141
 # print(can0.recv(2.0))
 
 #Read CAN ID
-read_msg = can.Message(is_extended_id=False,arbitration_id=multi_id,data= [0x79,0x00,0x00,0x00,0x00,0x00,0x00,0x11])
+read_msg = can.Message(is_extended_id=False,arbitration_id=multi_id,data= [0x79,0x00,0x01,0x00,0x00,0x00,0x00,0x02])
 can0.send(read_msg)
 print(can0.recv(2.0))
 
