@@ -32,7 +32,7 @@ def set_motor_can_id(bus, current_id, new_id):
         return
 
     # Small delay to ensure the motor has time to process the new ID
-    time.sleep(0.5)
+    time.sleep(1)
 
     # Save the new CAN ID to NVM to make it permanent
     save_command = [0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
@@ -41,15 +41,12 @@ def set_motor_can_id(bus, current_id, new_id):
         print(f"New CAN ID {new_id} saved to motor permanently. Response: {response}")
     else:
         print(f"Failed to save new CAN ID {new_id} permanently")
-
-def stop_motor(bus, can_id):
-    """Stop the motor by setting speed to 0."""
-    stop_data = [0xA2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-    response = send_can_message(bus, can_id, stop_data)
-    if response:
-        print(f"Motor with CAN ID {can_id - 0x140} stopped. Response:", response)
-    else:
-        print(f"Failed to stop motor with CAN ID {can_id - 0x140}")
+    
+    # Power cycle the motor to ensure the new ID is saved
+    print("Power cycling the motor to apply changes...")
+    shutdown_can_interface('can0')
+    time.sleep(2)  # Wait for the motor to fully power down
+    setup_can_interface('can0')
 
 def main():
     # Setup CAN interface for can0
@@ -61,9 +58,6 @@ def main():
 
     # Set the new CAN ID permanently
     set_motor_can_id(can0, current_id, new_id)
-
-    # Optionally, stop the motor as a precaution
-    #stop_motor(can0, 0x140 + new_id)
 
     # Shutdown CAN interface
     shutdown_can_interface('can0')
