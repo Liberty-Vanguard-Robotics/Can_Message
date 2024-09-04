@@ -32,7 +32,11 @@ def set_motor_can_id(bus, current_id, new_id):
         return
 
     # Small delay to ensure the motor has time to process the new ID
+<<<<<<< HEAD
     time.sleep(1)
+=======
+    time.sleep(3)
+>>>>>>> 02ce51b (hi)
 
     # Save the new CAN ID to NVM to make it permanent
     save_command = [0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
