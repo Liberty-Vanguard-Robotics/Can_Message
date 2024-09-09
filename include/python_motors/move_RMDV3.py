@@ -16,7 +16,7 @@ can1 = can.interface.Bus(channel= 'can1', bustype = 'socketcan')
 #Make message for moving motor
 
 #Multi motor command sending
-multi_id = 0x2fa
+multi_id = 0x260
 #Single motor command sending
 single_id = 0x141
 
@@ -26,25 +26,39 @@ single_id = 0x141
 # can0.send(reset_msg)
 # print(can0.recv(2.0))
 
-#Read CAN ID
-read_msg = can.Message(is_extended_id=False,arbitration_id=multi_id,data= [0x79,0x00,0x01,0x00,0x00,0x00,0x00,0x02])
+# status_msg = can.Message(is_extended_id=False,arbitration_id=single_id,data= [0x9a,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
+# can0.send(status_msg)
+# print(can0.recv(2.0))
+
+# write_accel_msg = can.Message(is_extended_id=False,arbitration_id=single_id,data=[0x43,0x00,0x00,0x00,0x00,0x00,0x77,0x00])
+# can0.send(write_accel_msg)
+# print(can0.recv(0.5))
+
+# read_accel_msg = can.Message(is_extended_id=False,arbitration_id=single_id,data=[0x42,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
+# can0.send(read_accel_msg)
+# print(can0.recv(2.0))
+
+# time.sleep(2)
+
+# #Read CAN ID
+read_msg = can.Message(is_extended_id=False,arbitration_id=single_id,data= [0x97,0x00,0x00,0x00,0x00,0x00,0x00,0x02])
 can0.send(read_msg)
 print(can0.recv(2.0))
 response = can0.recv(2.0)
 
-count = 100
-while (~response & count > 0):
-    multi_id = multi_id+1
-    read_msg = can.Message(is_extended_id=False,arbitration_id=multi_id,data= [0x79,0x00,0x01,0x00,0x00,0x00,0x00,0x02])
-    can0.send(read_msg)
-    print(can0.recv(2.0))
-    response = can0.recv(2.0)
-    count = count-1
+# count = 100
+# while (response == None and count > 0):
+#     multi_id = multi_id+1
+#     read_msg = can.Message(is_extended_id=False,arbitration_id=multi_id,data= [0x79,0x00,0x01,0x00,0x00,0x00,0x00,0x02])
+#     can0.send(read_msg)
+#     response = can0.recv(0.25)
+#     print(response)
+#     count = count-1
 
-if count == 0:
-    print("Received no response for write command")
-elif response:
-    print("Motor responded, please examine for ID change")
+# if count == 0:
+#     print("Received no response for write command")
+# elif response:
+#     print("Motor responded, please examine for ID change")
 
 #Make send and receive messages
 speed_write_msg_single = can.Message(is_extended_id=False,arbitration_id=single_id,data = [0xA2,0x00,0x00,0x00,0x27,0x27,0x00,0x00])
