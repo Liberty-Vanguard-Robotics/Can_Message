@@ -1,6 +1,7 @@
 import os
 import can
 import time
+import numpy as np
 
 def setup_can_interface(channel, bitrate=1000000):
     """Set up the CAN interface with the specified bitrate."""
@@ -21,7 +22,7 @@ def send_can_message(bus, arbitration_id, data):
 def set_motor_can_id(bus, current_id, new_id):
     """Set the CAN ID of the motor and save it permanently."""
     current_can_id = 0x140 + current_id
-    new_can_id_data = [0x81, new_id, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+    new_can_id_data = [0x79, new_id, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00]
     
     # Set the new CAN ID
     response = send_can_message(bus, current_can_id, new_can_id_data)
@@ -35,8 +36,8 @@ def set_motor_can_id(bus, current_id, new_id):
     time.sleep(1)
 
     # Save the new CAN ID to NVM to make it permanent
-    save_command = [0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-    response = send_can_message(bus, 0x140 + new_id, save_command)
+    save_command = [0x79, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, new_id]
+    response = send_can_message(bus, current_id, save_command)
     if response:
         print(f"New CAN ID {new_id} saved to motor permanently. Response: {response}")
     else:
@@ -52,10 +53,11 @@ def main():
     # Setup CAN interface for can0
     can0 = setup_can_interface('can0')
 
-    # Define current CAN ID and desired new CAN ID
-    current_id = 0x01  # Replace this with your current motor CAN ID
-    new_id = 0x05      # New CAN ID that you want to set
 
+    # Define current CAN ID and desired new CAN ID
+    current_id = 0x1c0  # Replace this with your current motor CAN ID
+    new_id = np.uint16(0x02)
+    
     # Set the new CAN ID permanently
     set_motor_can_id(can0, current_id, new_id)
 
