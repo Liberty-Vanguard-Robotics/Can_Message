@@ -12,7 +12,7 @@ can1 = can.interface.Bus(channel= 'can1', bustype = 'socketcan')
 
 msg = can.Message(is_extended_id=False,arbitration_id=0x028,data = [0,1,2,3,4,5,6,7])
 
-can0.send(speed_write_msg)
+can0.send(msg)
 
 msg_recv = can1.recv(10.0)
 print(msg_recv)
