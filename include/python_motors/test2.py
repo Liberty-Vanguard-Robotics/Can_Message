@@ -116,6 +116,9 @@ def main():
                 text_print.tprint(screen, f"Axis {i} value: {axis:>6.3f}")
             text_print.unindent()
 
+            text_print.tprint(screen, f"Left Side Speed = {axis(1) + axis(0)}")
+            text_print.tprint(screen, f"Right Side Speed = {axis(1) - axis(0)}")
+
             buttons = joystick.get_numbuttons()
             text_print.tprint(screen, f"Number of buttons: {buttons}")
             text_print.indent()
