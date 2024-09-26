@@ -111,13 +111,18 @@ def main():
             text_print.tprint(screen, f"Number of axes: {axes}")
             text_print.indent()
 
-            for i in range(axes):
-                axis = joystick.get_axis(i)
-                text_print.tprint(screen, f"Axis {i} value: {axis:>6.3f}")
-            text_print.unindent()
+            axis = [0,0,0,0,0,0]
 
-            text_print.tprint(screen, f"Left Side Speed = {axis(1) + axis(0)}")
-            text_print.tprint(screen, f"Right Side Speed = {axis(1) - axis(0)}")
+            for i in range(axes):
+                axis[i] = joystick.get_axis(i)
+                text_print.tprint(screen, f"Axis {i} value: {axis[i]:>6.3f}")
+
+            left_speed = -axis[1] + axis[0]
+            right_speed = -axis[1] - axis[0]
+            text_print.tprint(screen, f"Left Side Speed = {left_speed:>6.3f}")
+            text_print.tprint(screen, f"Right Side Speed = {right_speed:>6.3f}")
+
+            text_print.unindent()
 
             buttons = joystick.get_numbuttons()
             text_print.tprint(screen, f"Number of buttons: {buttons}")
