@@ -29,7 +29,8 @@ def send_can_message(bus, arbitration_id, data):
 def change_motor_id(bus, current_can_id, new_can_id):
     """Change the motor's CAN ID permanently."""
     # The command to change CAN ID is usually 0x79, followed by the new CAN ID in the data bytes
-    change_id_data = [0x79, 0x00, 0x00, 0x00, new_can_id & 0xFF, 0x00, 0x00, 0x00]
+    # Adjust the data structure based on your motor's protocol documentation
+    change_id_data = [0x80, 0x00, 0x00, 0x00, new_can_id & 0xFF, 0x00, 0x00, 0x00]
 
     response = send_can_message(bus, current_can_id, change_id_data)
     if response:
@@ -41,7 +42,7 @@ def test_new_motor_id(bus, new_can_id):
     """Test if the motor responds to the new CAN ID."""
     # Send a simple velocity command or status request to verify the new CAN ID
     test_data = [0xA2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-    
+
     response = send_can_message(bus, new_can_id, test_data)
     if response:
         print(f"Motor with new CAN ID {new_can_id - 0x140} is responding. Response: {response}")
@@ -61,10 +62,23 @@ def main():
         new_motor_id = 0x142  # Replace this with the new CAN ID you want (e.g., 0x142 for CAN ID 2)
         new_can_id = 0x000 + new_motor_id
 
-        #Change the motor's CAN ID permanently
+        # Change the motor's CAN ID permanently
         change_motor_id(can0, current_can_id, new_can_id)
 
-        test_new_motor_id(can0, 0x142)
+        # Shutdown the CAN interface to reinitialize it after power cycling the motor
+        shutdown_can_interface('can0')
+
+        # Prompt the user to manually power cycle the motor
+        print("Please power cycle the motor now (turn it off and then on again).")
+        input("After power cycling the motor, press Enter to continue...")
+
+        # Reinitialize CAN interface for can0
+        can0 = setup_can_interface('can0')
+
+        # Test communication with the new CAN ID
+        test_new_motor_id(can0, new_can_id)
+        test_new_motor_id(can0, 0x141)
+
 
     finally:
         # Shutdown CAN interface after usage
