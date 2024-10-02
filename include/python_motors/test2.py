@@ -115,30 +115,29 @@ def main():
             axes = joystick.get_numaxes()
             text_print.tprint(screen, f"Number of axes: {axes}")
             text_print.indent()
-
+            axis = [0,0,0,0,0,0]
             for i in range(axes):
-                axis = joystick.get_axis(i)
-                text_print.tprint(screen, f"Axis {i} value: {axis:>6.3f}")
+                axis[i] = joystick.get_axis(i)
+                text_print.tprint(screen, f"Axis {i} value: {axis[i]:>6.3f}")
 
-            text_print.tprint(screen, f"Left Side Speed = {axis(1) + axis(0)}")
-            text_print.tprint(screen, f"Right Side Speed = {axis(1) - axis(0)}")
+            text_print.tprint(screen, f"Left Side Speed = {(axis[1] + axis[0]):>6.3f}")
+            text_print.tprint(screen, f"Right Side Speed = {(axis[1] - axis[0]):>6.3f}")
 
             text_print.unindent()
-
-            
 
             buttons = joystick.get_numbuttons()
             text_print.tprint(screen, f"Number of buttons: {buttons}")
             text_print.indent()
 
+            button = [0,0,0,0,0,0,0,0,0,0,0,0]
             button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
             button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
             for i in range(buttons):
-                button = joystick.get_button(i)
-                if button == 0:
-                    text_print.tprint(screen, f"Button {button_values_list[i]} ({button_role_list[i]}) value: ON")
-                else:
+                button[i] = joystick.get_button(i)
+                if button[i] == 0:
                     text_print.tprint(screen, f"Button {button_values_list[i]} ({button_role_list[i]}) value: OFF")
+                else:
+                    text_print.tprint(screen, f"Button {button_values_list[i]} ({button_role_list[i]}) value: ON")
 
                 if button[7] == 1:
                     autonomous_state = 1
@@ -156,13 +155,14 @@ def main():
 
             # Hat position. All or nothing for direction, not a float like
             # get_axis(). Position is a tuple of int values (x, y).
+            hat = [0,0,0,0]
             for i in range(hats):
-                hat = joystick.get_hat(i)
-                text_print.tprint(screen, f"Hat {i} value: {str(hat)}")
+                hat[i] = joystick.get_hat(i)
+                text_print.tprint(screen, f"Hat {i} value: {str(hat[i])}")
                 if hat[1] == 1:
-                    max_speed += 0.01
+                    max_speed = max_speed + 1
                 elif hat[3] == 1:
-                    max_speed -= -0.01
+                    max_speed = max_speed - 1
             text_print.unindent()
 
             text_print.unindent()
