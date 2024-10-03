@@ -155,14 +155,14 @@ def main():
 
             # Hat position. All or nothing for direction, not a float like
             # get_axis(). Position is a tuple of int values (x, y).
-            hat = [0,0,0,0]
+
             for i in range(hats):
-                hat[i] = joystick.get_hat(i)
-                text_print.tprint(screen, f"Hat {i} value: {str(hat[i])}")
-                if hat[1] == 1:
+                hat = joystick.get_hat(i)
+                text_print.tprint(screen, f"Hat {i} value: {str(hat)}")
+                if hat == (0,1):
                     max_speed = max_speed + 1
-                elif hat[3] == 1:
-                    max_speed = max_speed - 1
+                elif hat == (0,-1):
+                    max_speed = max_speed - 1 
             text_print.unindent()
 
             text_print.unindent()
@@ -170,7 +170,7 @@ def main():
             # Misc. important data
             text_print.tprint(screen, f"Maximum speed: {max_speed}")
             
-            if autonomous_state == 0:
+            if autonomous_state == 0:  
                 text_print.tprint(screen, f"Autonomous State: OFF")
             else:
                 text_print.tprint(screen, f"Autonomous State: ON")
