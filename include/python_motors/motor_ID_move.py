@@ -41,7 +41,7 @@ def main():
 
     # Define the CAN ID of the motor you want to turn on
     motor_id = 0x141  # Replace this with the correct CAN ID of your motor
-    can_id = 0x032 + motor_id  # Calculate the CAN ID with the base offset
+    can_id = 0x000 + motor_id  # Calculate the CAN ID with the base offset
 
     # Turn on the motor
     turn_on_motor(can0, can_id)

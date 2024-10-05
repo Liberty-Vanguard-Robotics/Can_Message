@@ -44,11 +44,16 @@ def main():
     # at the start of the program.
     joysticks = {}
 
+    # Set of variables to be used to track rover states
+    max_speed = 0
+    autonomous_state = 0
+
     done = False
     while not done:
         # Event processing step.
         # Possible joystick events: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
         # JOYBUTTONUP, JOYHATMOTION, JOYDEVICEADDED, JOYDEVICEREMOVED
+
 
         button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button","Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
         for event in pygame.event.get():
@@ -110,21 +115,38 @@ def main():
             axes = joystick.get_numaxes()
             text_print.tprint(screen, f"Number of axes: {axes}")
             text_print.indent()
-
+            axis = [0,0,0,0,0,0]
             for i in range(axes):
-                axis = joystick.get_axis(i)
-                text_print.tprint(screen, f"Axis {i} value: {axis:>6.3f}")
+                axis[i] = joystick.get_axis(i)
+                text_print.tprint(screen, f"Axis {i} value: {axis[i]:>6.3f}")
+
+            text_print.tprint(screen, f"Left Side Speed = {(axis[1] + axis[0]):>6.3f}")
+            text_print.tprint(screen, f"Right Side Speed = {(axis[1] - axis[0]):>6.3f}")
+
             text_print.unindent()
 
             buttons = joystick.get_numbuttons()
             text_print.tprint(screen, f"Number of buttons: {buttons}")
             text_print.indent()
 
+            button = [0,0,0,0,0,0,0,0,0,0,0,0]
             button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
-
+            button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
             for i in range(buttons):
-                button = joystick.get_button(i)
-                text_print.tprint(screen, f"Button {button_values_list[i]} value: {button}")
+                button[i] = joystick.get_button(i)
+                if button[i] == 0:
+                    text_print.tprint(screen, f"Button {button_values_list[i]} ({button_role_list[i]}) value: OFF")
+                else:
+                    text_print.tprint(screen, f"Button {button_values_list[i]} ({button_role_list[i]}) value: ON")
+
+                if button[7] == 1:
+                    autonomous_state = 1
+                else:
+                    autonomous_state = 0
+
+                if button[6] == 1:
+                    pygame.quit()
+
             text_print.unindent()
 
             hats = joystick.get_numhats()
@@ -133,12 +155,25 @@ def main():
 
             # Hat position. All or nothing for direction, not a float like
             # get_axis(). Position is a tuple of int values (x, y).
+
             for i in range(hats):
                 hat = joystick.get_hat(i)
                 text_print.tprint(screen, f"Hat {i} value: {str(hat)}")
+                if hat == (0,1):
+                    max_speed = max_speed + 1
+                elif hat == (0,-1):
+                    max_speed = max_speed - 1 
             text_print.unindent()
 
             text_print.unindent()
+
+            # Misc. important data
+            text_print.tprint(screen, f"Maximum speed: {max_speed}")
+            
+            if autonomous_state == 0:  
+                text_print.tprint(screen, f"Autonomous State: OFF")
+            else:
+                text_print.tprint(screen, f"Autonomous State: ON")
 
         # Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
