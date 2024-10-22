@@ -59,7 +59,7 @@ def main():
     joystick_count = test2_gather.joystick_count
     hat = test2_gather.hat
     button = test2_gather.button
-    axis = test2_gather.axis
+    axis = test2_gather.button
     button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
     button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
     axis_values_list = ["Left Joystick Horizontal","Left Joystick Vertical","Left Trigger","Right Joystick Horizontal","Right Joystick Vertical","Right Trigger"]
