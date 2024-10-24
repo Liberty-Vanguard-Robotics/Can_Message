@@ -1,4 +1,9 @@
 import pygame
+import rmdv3
+import can
+
+can0 = can.interface.Bus(channel= 'can0', bustype = 'socketcan')
+can1 = can.interface.Bus(channel= 'can1', bustype = 'socketcan')
 
 pygame.init()
 
@@ -44,9 +49,35 @@ def main():
     # at the start of the program.
     joysticks = {}
 
-    # Set of variables to be used to track rover states
+    # Set of variables and lists used to print the proper names or gather important data and button states
     max_speed = 0
     autonomous_state = 0
+    speed_left = 0
+    speed_right = 0
+    hats = 0
+    buttons = 0
+    axes = 0
+    jid = 0
+    name = "0"
+    power_level = 0
+    guid = 0
+    joystick_count = 0
+    #Arrays
+    hat = (0,0)
+    button = [0,0,0,0,0,0,0,0,0,0,0,0]
+    axis = [0,0,0,0,0,0]
+    #Lists
+    button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
+    button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
+    axis_values_list = ["Left Joystick Horizontal","Left Joystick Vertical","Left Trigger","Right Joystick Horizontal","Right Joystick Vertical","Right Trigger"]
+    axis_roles_list = ["Turning","Forward Motion","0","0","0","0"]
+    #can motor ID's
+    rfront_id = 0x141
+    rcen_id = 0x141
+    rback_id = 0x141
+    lfront_id = 0x141
+    lcen_id = 0x141
+    lback_id = 0x141
 
     done = False
     while not done:
@@ -54,8 +85,6 @@ def main():
         # Possible joystick events: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
         # JOYBUTTONUP, JOYHATMOTION, JOYDEVICEADDED, JOYDEVICEREMOVED
 
-
-        button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button","Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True  # Flag that we are done so we exit this loop.
@@ -84,6 +113,7 @@ def main():
         # Drawing step
         # First, clear the screen to white. Don't put other drawing commands
         # above this, or they will be erased with this command.
+        
         screen.fill((255, 255, 255))
         text_print.reset()
 
@@ -115,13 +145,15 @@ def main():
             axes = joystick.get_numaxes()
             text_print.tprint(screen, f"Number of axes: {axes}")
             text_print.indent()
-            axis = [0,0,0,0,0,0]
+
             for i in range(axes):
                 axis[i] = joystick.get_axis(i)
                 text_print.tprint(screen, f"Axis {i} value: {axis[i]:>6.3f}")
 
-            text_print.tprint(screen, f"Left Side Speed = {(axis[1] + axis[0]):>6.3f}")
-            text_print.tprint(screen, f"Right Side Speed = {(axis[1] - axis[0]):>6.3f}")
+            speed_left = (axis[1] + axis[0])*max_speed
+            speed_right = (axis[1] - axis[0])*max_speed
+            text_print.tprint(screen, f"Left Side Speed = {speed_left:>6.3f}")
+            text_print.tprint(screen, f"Right Side Speed = {speed_right:>6.3f}")
 
             text_print.unindent()
 
@@ -129,9 +161,6 @@ def main():
             text_print.tprint(screen, f"Number of buttons: {buttons}")
             text_print.indent()
 
-            button = [0,0,0,0,0,0,0,0,0,0,0,0]
-            button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
-            button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
             for i in range(buttons):
                 button[i] = joystick.get_button(i)
                 if button[i] == 0:
@@ -174,7 +203,12 @@ def main():
                 text_print.tprint(screen, f"Autonomous State: OFF")
             else:
                 text_print.tprint(screen, f"Autonomous State: ON")
-
+            can0.send(rmdv3.rmdv3_set_speed(rfront_id,speed_left))
+            can0.send(rmdv3.rmdv3_set_speed(rcen_id,speed_left))
+            can0.send(rmdv3.rmdv3_set_speed(rback_id,speed_left))
+            can1.send(rmdv3.rmdv3_set_speed(lfront_id,speed_right))
+            can1.send(rmdv3.rmdv3_set_speed(lcen_id,speed_right))
+            can1.send(rmdv3.rmdv3_set_speed(lback_id,speed_right))
         # Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
 
