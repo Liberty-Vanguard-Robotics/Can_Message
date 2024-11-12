@@ -1,6 +1,7 @@
 import time
 import os
-import pygamimport rmdv3
+import pygame
+import CAN_Commands.rmdv3
 import can
 
 def setup_can_interface(channel, bitrate=1000000):

@@ -76,6 +76,10 @@ rb_bool = 0
 lb_bool = 0
 
 done = 1
+can0.send(rmdv3.set_accelerate_RMDV3(rfront_id))
+can0.send(rmdv3.set_accelerate_RMDV3(rcen_id))
+can0.send(rmdv3.set_accelerate_RMDV3(rback_id))
+print(can0.recv(2.0))
 while done:
     for event in pygame.event.get():
         if event.type == pygame.JOYDEVICEREMOVED:
