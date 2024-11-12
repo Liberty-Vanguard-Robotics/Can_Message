@@ -1,5 +1,5 @@
 import pygame
-import test2_gather
+import Socket_Code_2
 pygame.init()
 
 
@@ -45,21 +45,21 @@ def main():
     joysticks = {}
 
     # Set of variables and lists used to print the proper names or gather important data and button states
-    max_speed = test2_gather.max_speed
-    autonomous_state = test2_gather.autonomous_state
-    speed_left = test2_gather.speed_left
-    speed_right = test2_gather.speed_right
-    hats = test2_gather.hats
-    buttons = test2_gather.buttons
-    axes = test2_gather.axes
-    jid = test2_gather.jid
-    name = test2_gather.name
-    power_level = test2_gather.power_level
-    guid = test2_gather.guid
-    joystick_count = test2_gather.joystick_count
-    hat = test2_gather.hat
-    button = test2_gather.button
-    axis = test2_gather.button
+    max_speed = Socket_Code_2.printing_array[1][0]
+    autonomous_state = Socket_Code_2.printing_array[1][1]
+    speed_left = Socket_Code_2.printing_array[1][2]
+    speed_right = Socket_Code_2.printing_array[1][3]
+    hats = Socket_Code_2.printing_array[0][0]
+    buttons = Socket_Code_2.printing_array[0][1]
+    axes = Socket_Code_2.printing_array[0][2]
+    jid = Socket_Code_2.printing_array[0][3]
+    name = Socket_Code_2.printing_array[0][4]
+    power_level = Socket_Code_2.printing_array[0][5]
+    guid = Socket_Code_2.printing_array[0][6]
+    joystick_count = Socket_Code_2.printing_array[0][7]
+    hat = Socket_Code_2.printing_array[2]
+    button = Socket_Code_2.printing_array[3]
+    axis = Socket_Code_2.printing_array[4]
     button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
     button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
     axis_values_list = ["Left Joystick Horizontal","Left Joystick Vertical","Left Trigger","Right Joystick Horizontal","Right Joystick Vertical","Right Trigger"]
