@@ -1,3 +1,5 @@
+import os
+import sys
 import pygame
 import rmdv3
 import can
@@ -50,7 +52,7 @@ def main():
     joysticks = {}
 
     # Set of variables and lists used to print the proper names or gather important data and button states
-    max_speed = 0
+    max_speed = 10
     autonomous_state = 0
     speed_left = 0
     speed_right = 0
@@ -175,6 +177,7 @@ def main():
 
                 if button[6] == 1:
                     pygame.quit()
+                    sys.exit()
 
             text_print.unindent()
 
@@ -203,12 +206,12 @@ def main():
                 text_print.tprint(screen, f"Autonomous State: OFF")
             else:
                 text_print.tprint(screen, f"Autonomous State: ON")
-            can0.send(rmdv3.rmdv3_set_speed(rfront_id,speed_left))
-            can0.send(rmdv3.rmdv3_set_speed(rcen_id,speed_left))
-            can0.send(rmdv3.rmdv3_set_speed(rback_id,speed_left))
-            can1.send(rmdv3.rmdv3_set_speed(lfront_id,speed_right))
-            can1.send(rmdv3.rmdv3_set_speed(lcen_id,speed_right))
-            can1.send(rmdv3.rmdv3_set_speed(lback_id,speed_right))
+            can0.send(rmdv3.rmdv3_set_speed(rfront_id,1,speed_left,1))
+            can0.send(rmdv3.rmdv3_set_speed(rcen_id,1,speed_left,1))
+            can0.send(rmdv3.rmdv3_set_speed(rback_id,1,speed_left,1))
+            can1.send(rmdv3.rmdv3_set_speed(lfront_id,1,speed_right,1))
+            can1.send(rmdv3.rmdv3_set_speed(lcen_id,1,speed_right,1))
+            can1.send(rmdv3.rmdv3_set_speed(lback_id,1,speed_right,1))
         # Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
 

@@ -1,5 +1,6 @@
 import socket
 import pickle
+import test2_gather #the file where the data we're sending comes from
 
 def send_command(data):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -13,5 +14,4 @@ def send_command(data):
     client_socket.close()
     print('Data Sent')
 
-array = [0,4,2,1]
-send_command(array) 
+send_command(test2_gather.array_matrix_print) #Sending the entire array through in a single command
