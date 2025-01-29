@@ -7,7 +7,7 @@ import rmdv3
 import can
 from pygame.locals import *
 import sys
-import can
+
 
 os.system('sudo ip link set can0 type can bitrate 1000000')
 os.system('sudo ifconfig can0 up')
@@ -83,10 +83,10 @@ while True:
             print(event)
             #This is the a button I believe
             if joysticks[0].get_button(0):
-                can0.send(rmdv3.rmdv3_set_speed(rfront_id, 1, max_speed))
+                can0.send(rmdv3.increasing_speed_set(rfront_id, 1, max_speed))
                 print("You have pressed the a button")
             elif joysticks[0].get_button(1):
-                can0.send(rmdv3.rmdv3_set_speed(rfront_id, 0, max_speed))
+                can0.send(rmdv3.increasing_speed_set(rfront_id, 0, max_speed))
                 print("This is B button")
                 
         if event.type == JOYBUTTONUP:
@@ -99,6 +99,8 @@ while True:
             print(event)
         if event.type == QUIT:
             pygame.quit()
+            os.system('sudo ifconfig can0 down')
+            os.system('sudo ifconfig can1 down')
             sys.exit()
 
     #This sets it to 60 frames per second

@@ -11,6 +11,7 @@
 # As of writing, the joystick values range from -1 to 1, while speed ranges from 
 
 import can
+import numpy
 
 def neg_int(int_num,byte_length):
     speed_bytes = int.to_bytes(int_num,length=byte_length,byteorder='little',signed=True)
@@ -73,3 +74,33 @@ def read_PID_RMDV3(motor_id):
     print(type(PID_Command))
     PID_CAN_Msg = can.Message(is_extended_id=False,arbitration_id=motor_id,data= PID_Command)
     return PID_CAN_Msg
+
+def increasing_speed_set(motor_id, axis_value, max_speed,bits_length=32):
+    msg_data = [0xA2,0x00,0x00,0x00,0x00,0x00,0x00,0x00]
+
+    motor_speed = max_speed - int(axis_value * max_speed)
+
+    twocomp_speed = twos_comp(motor_speed,bits_length)
+    print(twocomp_speed)
+
+   
+    bytes = int(motor_speed).to_bytes(4, byteorder='little')
+    msg_data[4] = bytes[0]
+    msg_data[5] = bytes[1]
+    msg_data[6] = bytes[2]
+    msg_data[7] = bytes[3]
+    print(bytes)
+    canMsg = can.Message(is_extended_id=False,arbitration_id=motor_id,data= msg_data)
+    return canMsg
+
+
+
+def twos_comp(val, bits):
+    """compute the 2's complement of int value val"""
+    if (val & (1 << (bits - 1))) != 0: # if sign bit is set e.g., 8bit: 128-255
+        val = val - (1 << bits)        # compute negative value
+    return val
+
+def twos_complement_binary(n, num_bits):
+    mask = (1 << num_bits) - 1
+    return (n & mask) if (n & (1 << (num_bits - 1))) == 0 else (n | ~mask)
