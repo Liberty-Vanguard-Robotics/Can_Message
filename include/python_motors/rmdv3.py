@@ -35,7 +35,7 @@ def rmdv3_set_speed(motor_id,axis,max_speed,axis_start=-1,byte_length=4): #I'm s
         speed_bytes = neg_int(speed,byte_length)
     else:#If it isn't negative, we just have to split it up into bytes to use
         speed_bytes = int.to_bytes(speed,length=byte_length,byteorder='little',signed=True)
-        #The big order being 'little' sets the array so that the most significant bit is now at the end
+        #The byte order being 'little' sets the array so that the most significant bit is now at the end
     
     #At this point, we should be in a series of bytes that can be put into a CAN Message
     msg_data[4] = speed_bytes[0]
@@ -49,4 +49,13 @@ def rmdv3_set_speed(motor_id,axis,max_speed,axis_start=-1,byte_length=4): #I'm s
     print(speed_msg)
 
     return speed_msg
+
+def set_accelerate_RMDV3(motor_id):
+    # this is the data to write the acceleration to 1 degrees per second
+    
+    accel_Data = [0x43,0x00,0x00,0x00,0x01,0x00,0x00,0x00]
+
+    print(type(accel_Data))
+    accel_CAN_Msg = can.Message(is_extended_id=False,arbitration_id=motor_id,data= accel_Data)
+    return accel_CAN_Msg
     
