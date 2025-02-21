@@ -11,10 +11,7 @@
 # As of writing, the joystick values range from -1 to 1, while speed ranges from 
 
 import can
-<<<<<<< Updated upstream
-=======
 import can.message
->>>>>>> Stashed changes
 import numpy
 
 def neg_int(int_num,byte_length):
@@ -49,11 +46,7 @@ def rmdv3_set_speed(motor_id,axis,max_speed,axis_start=-1,byte_length=4): #I'm s
     msg_data[7] = speed_bytes[3]
 
     print(type(msg_data))
-<<<<<<< Updated upstream
-
-=======
     
->>>>>>> Stashed changes
     speed_msg = can.Message(is_extended_id=False,arbitration_id=motor_id,data= msg_data)
     print(speed_msg)
 
