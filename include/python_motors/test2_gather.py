@@ -31,7 +31,7 @@ def main():
     button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
     axis_values_list = ["Left Joystick Horizontal","Left Joystick Vertical","Left Trigger","Right Joystick Horizontal","Right Joystick Vertical","Right Trigger"]
     axis_roles_list = ["Turning","Forward Motion","0","0","0","0"]
-
+    array_matrix_print = []
     done = False
     while not done:
         # Event processing step.
@@ -109,6 +109,9 @@ def main():
                 elif hat == (0,-1):
                     max_speed = max_speed - 1 
 
+        static_value_print = [hats,buttons,axes,jid,name,power_level,guid,joystick_count]
+        variable_value_print = [max_speed,autonomous_state,speed_left,speed_right,]
+        array_matrix_print = [static_value_print,variable_value_print,hat,button,axis]
         # Limit to 30 frames per second.
         clock.tick(30)
 
