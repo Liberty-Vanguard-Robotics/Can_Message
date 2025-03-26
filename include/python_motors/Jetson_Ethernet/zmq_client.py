@@ -1,17 +1,23 @@
-#This represents the Rasberry Pi
-# pip install pyzmq
+#
+#   Hello World client in Python
+#   Connects REQ socket to tcp://localhost:5555
+#   Sends "Hello" to server, expects "World" back
+#
 
 import zmq
 
-# Set up the server (Raspberry Pi)
 context = zmq.Context()
-socket = context.socket(zmq.REP)  # REP (reply) socket type
-socket.bind("tcp://*:5555")  # Bind to a port (e.g., 5555)
 
-while True:
-    # Receive a message from the client
-    message = socket.recv_string()
-    print(f"Received: {message}")
+#  Socket to talk to server
+print("Connecting to hello world server…")
+socket = context.socket(zmq.REQ)
+socket.connect("tcp://192.168.1.207:5555")
 
-    # Send a reply to the client
-    socket.send_string("Data received!")
+#  Do 10 requests, waiting each time for a response
+for request in range(10):
+    print("Sending request %s …" % request)
+    socket.send(b"Hello")
+
+    #  Get the reply.
+    message = socket.recv()
+    print("Received reply %s [ %s ]" % (request, message))
