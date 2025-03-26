@@ -1,14 +1,23 @@
-# THis represents the Jetson Nano. Will send information to the Rasberry PI
+#
+#   Hello World server in Python
+#   Binds REP socket to tcp://*:5555
+#   Expects b"Hello" from client, replies with b"World"
+#
+
+import time
 import zmq
 
-# Set up the client (Linux computer)
 context = zmq.Context()
-socket = context.socket(zmq.REQ)  # REQ (request) socket type
-socket.connect("tcp://192.168.1.100:5555")  # Connect to the Raspberry Pi's IP and port
+socket = context.socket(zmq.REP)
+socket.bind("tcp://*:5555")
 
-# Send a message to the server
-socket.send_string("Hello from the Linux computer!")
+while True:
+    #  Wait for next request from client
+    message = socket.recv()
+    print("Received request: %s" % message)
 
-# Receive the response from the server
-message = socket.recv_string()
-print(f"Response from server: {message}")
+    #  Do some 'work'
+    time.sleep(1)
+
+    #  Send reply back to client
+    socket.send(b"World")
