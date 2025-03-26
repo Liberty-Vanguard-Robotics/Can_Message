@@ -10,8 +10,8 @@ BUFFER_SIZE = 1024 # Size of the buffer for receiving data
 # Create a socket object
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Bind the socket to the IP and port
-server_socket.bind()
+# Bind the socket to the IP and port PORT and HOST are grouped together
+server_socket.bind((HOST,PORT))
 
 # Listen for incoming connections (max 1 connection in this case)
 server_socket.listen(1)
