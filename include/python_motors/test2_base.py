@@ -1,11 +1,6 @@
 import os
 import sys
 import pygame
-import rmdv3
-import can
-
-can0 = can.interface.Bus(channel= 'can0', bustype = 'socketcan')
-can1 = can.interface.Bus(channel= 'can1', bustype = 'socketcan')
 
 pygame.init()
 
@@ -66,20 +61,13 @@ def main():
     joystick_count = 0
     #Arrays
     hat = (0,0)
-    button = [0,0,0,0,0,0,0,0,0,0,0,0]
+    button = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     axis = [0,0,0,0,0,0]
     #Lists
-    button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
-    button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
+    button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button","0","0","0","0"]
+    button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0","0","0","0","0"]
     axis_values_list = ["Left Joystick Horizontal","Left Joystick Vertical","Left Trigger","Right Joystick Horizontal","Right Joystick Vertical","Right Trigger"]
     axis_roles_list = ["Turning","Forward Motion","0","0","0","0"]
-    #can motor ID's
-    rfront_id = 0x141
-    rcen_id = 0x141
-    rback_id = 0x141
-    lfront_id = 0x141
-    lcen_id = 0x141
-    lback_id = 0x141
 
     done = False
     while not done:
@@ -206,12 +194,7 @@ def main():
                 text_print.tprint(screen, f"Autonomous State: OFF")
             else:
                 text_print.tprint(screen, f"Autonomous State: ON")
-            can0.send(rmdv3.rmdv3_set_speed(rfront_id,1,speed_left,1))
-            can0.send(rmdv3.rmdv3_set_speed(rcen_id,1,speed_left,1))
-            can0.send(rmdv3.rmdv3_set_speed(rback_id,1,speed_left,1))
-            can1.send(rmdv3.rmdv3_set_speed(lfront_id,1,speed_right,1))
-            can1.send(rmdv3.rmdv3_set_speed(lcen_id,1,speed_right,1))
-            can1.send(rmdv3.rmdv3_set_speed(lback_id,1,speed_right,1))
+
         # Go ahead and update the screen with what we've drawn.
         pygame.display.flip()
 
