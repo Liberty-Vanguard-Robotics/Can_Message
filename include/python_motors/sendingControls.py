@@ -1,4 +1,21 @@
 import pygame
+import socket
+import pickle
+
+ip_addess = '192.168.1.206'
+
+def send_data(data):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+            client_socket.connect((ip_addess, 65432))
+
+            # Serialize data to send
+            serialized_data = pickle.dumps(data)
+
+            client_socket.sendall(serialized_data)
+            print("Data Sent")
+    except Exception as e:
+        print(f"Error: {e}")
 
 pygame.init()
 
@@ -113,10 +130,10 @@ def main():
                       'Left Joystick Horizontal': axis[0], 'Left Joystick Vertical': axis[1], 'Left Trigger': axis[2],
                         'Right Joystick Horizontal': axis[3],'Right Joystick Vertical': axis[4],'Right Trigger': axis[5] }
         # Limit to 30 frames per second.
-        
+        send_data(controller)
         clock.tick(30)
-
-        return controller
+        
+        #return controller
 
 
 if __name__ == "__main__":
