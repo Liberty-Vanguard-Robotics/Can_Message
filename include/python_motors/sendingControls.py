@@ -130,9 +130,10 @@ def main():
                       'Left Joystick Horizontal': axis[0], 'Left Joystick Vertical': axis[1], 'Left Trigger': axis[2],
                         'Right Joystick Horizontal': axis[3],'Right Joystick Vertical': axis[4],'Right Trigger': axis[5] }
         # Limit to 30 frames per second.
+        send_data(controller)
         clock.tick(30)
-
-        return controller
+        
+        #return controller
 
 
 if __name__ == "__main__":
