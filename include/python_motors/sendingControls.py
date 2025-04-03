@@ -1,4 +1,21 @@
 import pygame
+import socket
+import pickle
+
+ip_addess = '192.168.1.206'
+
+def send_data(data):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+            client_socket.connect((ip_addess, 65432))
+
+            # Serialize data to send
+            serialized_data = pickle.dumps(data)
+
+            client_socket.sendall(serialized_data)
+            print("Data Sent")
+    except Exception as e:
+        print(f"Error: {e}")
 
 pygame.init()
 
