@@ -19,7 +19,7 @@ def send_data(data):
 
 pygame.init()
 
-def main():
+def controller():
     # Used to manage how fast the screen updates.
     clock = pygame.time.Clock()
 
@@ -51,90 +51,92 @@ def main():
     array_matrix_print = []
     done = False
 
-    while not done:
-        # Event processing step.
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True  # Flag that we are done so we exit this loop.
-            if event.type == pygame.JOYBUTTONDOWN:
-                print(f"Joystick button {button_values_list[event.button]} pressed.")
-                if event.button == 0:
-                    joystick = joysticks[event.instance_id]
-                    if joystick.rumble(0, 0.7, 500):
-                        print(f"Rumble effect played on joystick {event.instance_id}")
+    # Event processing step.
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+             done = True  # Flag that we are done so we exit this loop.
+        if event.type == pygame.JOYBUTTONDOWN:
+            print(f"Joystick button {button_values_list[event.button]} pressed.")
+            if event.button == 0:
+                joystick = joysticks[event.instance_id]
+                if joystick.rumble(0, 0.7, 500):
+                    print(f"Rumble effect played on joystick {event.instance_id}")
 
-            if event.type == pygame.JOYBUTTONUP:
-                print(f"Joystick button {button_values_list[event.button]} released.")
+        if event.type == pygame.JOYBUTTONUP:
+            print(f"Joystick button {button_values_list[event.button]} released.")
 
-            # Handle hotplugging
-            if event.type == pygame.JOYDEVICEADDED:
-                joy = pygame.joystick.Joystick(event.device_index)
-                joysticks[joy.get_instance_id()] = joy
-                print(f"Joystick {joy.get_instance_id()} connected")
+        # Handle hotplugging
+        if event.type == pygame.JOYDEVICEADDED:
+            joy = pygame.joystick.Joystick(event.device_index)
+            joysticks[joy.get_instance_id()] = joy
+            print(f"Joystick {joy.get_instance_id()} connected")
 
-            if event.type == pygame.JOYDEVICEREMOVED:
-                del joysticks[event.instance_id]
-                print(f"Joystick {event.instance_id} disconnected")
+        if event.type == pygame.JOYDEVICEREMOVED:
+            del joysticks[event.instance_id]
+            print(f"Joystick {event.instance_id} disconnected")
 
-        # Get count of joysticks.
-        joystick_count = pygame.joystick.get_count()
+    # Get count of joysticks.
+    joystick_count = pygame.joystick.get_count()
 
-        # For each joystick:
-        for joystick in joysticks.values():
-            jid = joystick.get_instance_id()
-            name = joystick.get_name()  # Get the name from the OS for the controller/joystick.
-            guid = joystick.get_guid()
-            power_level = joystick.get_power_level()
+    # For each joystick:
+    for joystick in joysticks.values():
+        jid = joystick.get_instance_id()
+        name = joystick.get_name()  # Get the name from the OS for the controller/joystick.
+        guid = joystick.get_guid()
+        power_level = joystick.get_power_level()
 
-            # Get number of axes and initialize axis list
-            axes = joystick.get_numaxes()
-            axis = [0] * axes  # Initialize axis list dynamically
+        # Get number of axes and initialize axis list
+        axes = joystick.get_numaxes()
+        axis = [0] * axes  # Initialize axis list dynamically
 
-            for i in range(axes):
-                axis[i] = joystick.get_axis(i)
+        for i in range(axes):
+            axis[i] = joystick.get_axis(i)
 
-            speed_left = (axis[1] + axis[0]) * max_speed
-            speed_right = (axis[1] - axis[0]) * max_speed
+        speed_left = (axis[1] + axis[0]) * max_speed
+        speed_right = (axis[1] - axis[0]) * max_speed
 
-            # Get number of buttons and initialize button list
-            buttons = joystick.get_numbuttons()
-            button = [0] * buttons  # Initialize button list dynamically
+        # Get number of buttons and initialize button list
+        buttons = joystick.get_numbuttons()
+        button = [0] * buttons  # Initialize button list dynamically
 
-            for i in range(buttons):
-                button[i] = joystick.get_button(i)
+        for i in range(buttons):
+            button[i] = joystick.get_button(i)
 
-            # Check specific button conditions
-            if buttons >= 8:
-                if button[7] == 1:
-                    autonomous_state = 1
-                else:
-                    autonomous_state = 0
+        # Check specific button conditions
+        if buttons >= 8:
+            if button[7] == 1:
+                autonomous_state = 1
+            else:
+                autonomous_state = 0
 
-                if button[6] == 1:
-                    pygame.quit()
-                    exit()  # Ensure the program exits
+            if button[6] == 1:
+                pygame.quit()
+                exit()  # Ensure the program exits
 
-            # Get number of hats
-            hats = joystick.get_numhats()
+        # Get number of hats
+        hats = joystick.get_numhats()
 
-            for i in range(hats):
-                hat = joystick.get_hat(i)
-                if hat == (0, 1):
-                    max_speed = max_speed + 1
-                elif hat == (0, -1):
-                    max_speed = max_speed - 1
+        for i in range(hats):
+            hat = joystick.get_hat(i)
+            if hat == (0, 1):
+                max_speed = max_speed + 1
+            elif hat == (0, -1):
+                max_speed = max_speed - 1
 
-        controller = {'A': button[0], 'B': button[1], 'X': button[2], 'Y': button[3], 'LB': button[4], 'RB': 
-                      button[5], 'Display Button': button[6], 'Menu Button': button[7], 'XBOX Symbol': button[8],
-                      'Left Joystick Trigger': button[9], 'Right Joystick Trigger': button[10], 'Inbox Button': button[11], 
-                      'Left Joystick Horizontal': axis[0], 'Left Joystick Vertical': axis[1], 'Left Trigger': axis[2],
-                        'Right Joystick Horizontal': axis[3],'Right Joystick Vertical': axis[4],'Right Trigger': axis[5] }
-        # Limit to 30 frames per second.
-        send_data(controller)
-        clock.tick(30)
+    controller = {'A': button[0], 'B': button[1], 'X': button[2], 'Y': button[3], 'LB': button[4], 'RB': 
+                  button[5], 'Display Button': button[6], 'Menu Button': button[7], 'XBOX Symbol': button[8],
+                  'Left Joystick Trigger': button[9], 'Right Joystick Trigger': button[10], 'Inbox Button': button[11], 
+                  'Left Joystick Horizontal': axis[0], 'Left Joystick Vertical': axis[1], 'Left Trigger': axis[2],
+                    'Right Joystick Horizontal': axis[3],'Right Joystick Vertical': axis[4],'Right Trigger': axis[5] }
+    # Limit to 30 frames per second.
+    send_data(controller)
+    clock.tick(30)
         
-        #return controller
+    #return controller
 
+def main():
+    while not done:
+        controller()
 
 if __name__ == "__main__":
     array_matrix_print = main()
