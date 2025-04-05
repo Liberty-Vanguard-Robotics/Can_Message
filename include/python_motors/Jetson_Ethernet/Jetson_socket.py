@@ -14,7 +14,7 @@ jetson_socket.connect((HOST, PORT))
 
 # Send data to the server
 message = 4.12345
-data = {'y-axis': .5, 'x-axis': .23, 'max_speed': 160000}
+data = {'y-axis': .5, 'x-axis': .0, 'max_speed': 160000}
 jetson_socket.sendall(pickle.dumps(data))
 
 # Receive response from the server

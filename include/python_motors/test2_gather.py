@@ -31,7 +31,6 @@ def main():
     button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
     axis_values_list = ["Left Joystick Horizontal","Left Joystick Vertical","Left Trigger","Right Joystick Horizontal","Right Joystick Vertical","Right Trigger"]
     axis_roles_list = ["Turning","Forward Motion","0","0","0","0"]
-    array_matrix_print = []
     done = False
     while not done:
         # Event processing step.
@@ -109,12 +108,15 @@ def main():
                 elif hat == (0,-1):
                     max_speed = max_speed - 1 
 
-        static_value_print = [hats,buttons,axes,jid,name,power_level,guid,joystick_count]
-        variable_value_print = [max_speed,autonomous_state,speed_left,speed_right,]
-        array_matrix_print = [static_value_print,variable_value_print,hat,button,axis]
+        controller = {'A': button[0], 'B': button[1], 'X': button[2], 'Y': button[3], 'LB': button[4], 'RB': 
+                      button[5], 'Display Button': button[6], 'Menu Button': button[7], 'XBOX Symbol': button[8],
+                      'Left Joystick Trigger': button[9], 'Right Joystick Trigger': button[10], 'Inbox Button': button[11], 
+                      'Left Joystick Horizontal': axis[0], 'Left Joystick Vertical': axis[1], 'Left Trigger': axis[2],
+                        'Right Joystick Horizontal': axis[3],'Right Joystick Vertical': axis[4],'Right Trigger': axis[5] }
         # Limit to 30 frames per second.
         clock.tick(30)
 
+        return controloler
 
 if __name__ == "__main__":
     main()
