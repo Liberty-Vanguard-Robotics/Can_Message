@@ -5,7 +5,7 @@ import time
 import os
 import can.interface
 import pygame
-import rmdv3
+from CAN_Commands import rmdv3
 import can
 from pygame.locals import *
 import sys
@@ -19,7 +19,7 @@ os.system("sudo ifconfig can0 txqueuelen 1000")
 os.system('sudo ip link set can1 type can bitrate 1000000')
 os.system('sudo ifconfig can1 up')
 os.system("sudo ifconfig can1 txqueuelen 1000")
-
+#CAN0 will be right side motors and CAN1 will be left side motors 
 can0 = can.interface.Bus(channel= 'can0', bustype = 'socketcan')
 can1 = can.interface.Bus(channel= 'can1', bustype = 'socketcan')
 
@@ -30,7 +30,7 @@ rfront_id = 0x141
 rback_id = 0x141
 lfront_id = 0x141
 lback_id = 0x141
-
+constMaxSpeed = 25000
 
 # Set up the server (Raspberry Pi)
 HOST = '0.0.0.0'  # Listen on all available interfaces
@@ -60,12 +60,41 @@ while True:
             break
 
         data = pickle.loads(serialize_data)
-        
+
         print(f"Received data: {data}")
         
         # Send a response back
         conn.sendall(b"Data received!")
 
+    # data contains 3 parameters. y-axis and x-axis of joystick,
+    # max_speed
+    top_speed = data['max_speed']
+    forward_vector = data['y-axis']
+    turn_vector = data['x-axis']
+    #Postive means to the right of the joystick 
+    if (turn_vector > .2):
+        #left motors should go forward
+        can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,top_speed))
+        turn_vector = -turn_vector
+        #right motors go backwards
+        can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,top_speed))
+    elif (turn_vector < -.2):
+        turn_vector = abs(turn_vector)
+        can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,top_speed))
+        turn_vector = -turn_vector
+        can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,top_speed))
+    elif (forward_vector > .2):\
+        #make both left and right motors to go forward.
+        can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,top_speed))
+        can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,top_speed))
+    elif (forward_vector < -.2):
+        can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,top_speed))
+        can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,top_speed))
+    else:
+        can0.send(rmdv3.increasing_speed_set(rfront_id,0,top_speed))
+        can1.send(rmdv3.increasing_speed_set(rfront_id,0,top_speed))
+
+     
     # Close the connection
     conn.close()
     break

@@ -75,17 +75,17 @@ def read_PID_RMDV3(motor_id):
     print(type(PID_Command))
     PID_CAN_Msg = can.Message(is_extended_id=False,arbitration_id=motor_id,data= PID_Command)
     return PID_CAN_Msg
-
+# this is the commmand we will use for the Demo of the rover
 def increasing_speed_set(motor_id, axis_value, max_speed,bits_length=32):
     msg_data = [0xA2,0x00,0x00,0x00,0x00,0x00,0x00,0x00]
 
-    motor_speed = max_speed - int(axis_value * max_speed)
+    motor_speed = int(axis_value * max_speed)
 
-    twocomp_speed = twos_comp(motor_speed,bits_length)
-    print(twocomp_speed)
+    #twocomp_speed = twos_comp(motor_speed,bits_length)
+    #print(twocomp_speed)
 
    
-    bytes = int(motor_speed).to_bytes(4, byteorder='little')
+    bytes = int(motor_speed).to_bytes(4, byteorder='little',signed=True)
     msg_data[4] = bytes[0]
     msg_data[5] = bytes[1]
     msg_data[6] = bytes[2]
