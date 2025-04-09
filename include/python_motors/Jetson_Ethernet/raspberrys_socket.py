@@ -64,9 +64,9 @@ while True:
         data = pickle.loads(serialize_data)
 
         print(f"Received data: {data}")
-        
+        break
         # Send a response back
-        conn.sendall(b"Data received!")
+        #conn.sendall(b"Data received!")
 
     # data contains 3 parameters. y-axis and x-axis of joystick,
     # max_speed
@@ -96,7 +96,7 @@ while True:
         can0.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
         can1.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
 
-    clock.tick(60)
+    clock.tick(1)
 
     # Close the connection
     conn.close()
