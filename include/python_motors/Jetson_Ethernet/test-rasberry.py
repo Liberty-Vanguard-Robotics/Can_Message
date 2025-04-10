@@ -26,7 +26,8 @@ while True:
         data = conn.recv(BUFFER_SIZE)
         if not data:
             break
-        print(f"Received data: {data.decode()}")
+        newdata = pickle.loads(data)
+        print(f"Received data: {newdata}")
         
         # Send a response back
         conn.sendall(b"Data received!")

@@ -1,15 +1,15 @@
 # This file represents the code for the Rasberry PI. 
 # This would send information to the raspberry pi to execute
 import socket
-import time
 import os
 import can.interface
 import pygame
-from CAN_Commands import rmdv3
+import rmdv3
 import can
 from pygame.locals import *
 import sys
 import pickle
+
 
 
 os.system('sudo ip link set can0 type can bitrate 1000000')
@@ -40,6 +40,8 @@ BUFFER_SIZE = 1024 # Size of the buffer for receiving data
 # Create a socket object
 rasberry_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+#make clock to sync system
+clock = pygame.time.Clock()
 # Bind the socket to the IP and port PORT and HOST are grouped together
 rasberry_socket.bind((HOST,PORT))
 # the main code that loops 
@@ -56,7 +58,7 @@ while True:
     # Keep receiving data until connection is closed
     while True:
         serialize_data = conn.recv(BUFFER_SIZE)
-        if not data:
+        if not serialize_data:
             break
 
         data = pickle.loads(serialize_data)
@@ -74,27 +76,27 @@ while True:
     #Postive means to the right of the joystick 
     if (turn_vector > .2):
         #left motors should go forward
-        can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,top_speed))
+        can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
         turn_vector = -turn_vector
         #right motors go backwards
-        can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,top_speed))
+        can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
     elif (turn_vector < -.2):
         turn_vector = abs(turn_vector)
-        can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,top_speed))
+        can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
         turn_vector = -turn_vector
-        can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,top_speed))
+        can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
     elif (forward_vector > .2):\
         #make both left and right motors to go forward.
-        can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,top_speed))
-        can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,top_speed))
+        can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
+        can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
     elif (forward_vector < -.2):
-        can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,top_speed))
-        can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,top_speed))
+        can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
+        can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
     else:
-        can0.send(rmdv3.increasing_speed_set(rfront_id,0,top_speed))
-        can1.send(rmdv3.increasing_speed_set(rfront_id,0,top_speed))
+        can0.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
+        can1.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
 
-     
+    clock.tick(60)
+
     # Close the connection
     conn.close()
-    break
