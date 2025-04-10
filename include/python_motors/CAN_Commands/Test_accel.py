@@ -83,7 +83,7 @@ while True:
             print(event)
             #This is the a button I believe
             if joysticks[0].get_button(0):
-                can0.send(rmdv3.increasing_speed_set(rfront_id, 1, max_speed))
+                can0.send(rmdv3.increasing_speed_set(rfront_id, -1, max_speed))
                 print("You have pressed the a button")
             elif joysticks[0].get_button(1):
                 can0.send(rmdv3.increasing_speed_set(rfront_id, 0, max_speed))

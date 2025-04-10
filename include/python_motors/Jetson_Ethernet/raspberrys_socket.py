@@ -64,7 +64,7 @@ while True:
         print(f"Received data: {data}")
         
         # Send a response back
-        conn.sendall(b"Data received!")
+        #conn.sendall(b"Data received!")
 
     # data contains 3 parameters. y-axis and x-axis of joystick,
     # max_speed
