@@ -9,6 +9,7 @@ import can
 from pygame.locals import *
 import sys
 import pickle
+import json
 
 
 
@@ -45,26 +46,39 @@ clock = pygame.time.Clock()
 # Bind the socket to the IP and port PORT and HOST are grouped together
 rasberry_socket.bind((HOST,PORT))
 # the main code that loops 
+
+# Listen for incoming connections (max 1 connection in this case)
+rasberry_socket.listen(1)
+print(f"Listening for connections on {HOST}:{PORT}...")
+(HOST, PORT)
+# Accept an incoming connection
+conn, addr = rasberry_socket.accept()
+print(f"Connected by {addr}")
 while True:
 
-    # Listen for incoming connections (max 1 connection in this case)
-    rasberry_socket.listen(1)
-    print(f"Listening for connections on {HOST}:{PORT}...")
-    (HOST, PORT)
-    # Accept an incoming connection
-    conn, addr = rasberry_socket.accept()
-    print(f"Connected by {addr}")
 
     # Keep receiving data until connection is closed
     while True:
         serialize_data = conn.recv(BUFFER_SIZE)
-        if not serialize_data:
+        if serialize_data:
+            data = pickle.loads(serialize_data)
+
+            print(f"Received data: {data}")
+            conn.sendall(pickle.dumps("Data received!"))
             break
-
-        data = pickle.loads(serialize_data)
-
-        print(f"Received data: {data}")
-        break
+            # buffer = ""
+            # buffer += str(data)
+            # try:
+            #     command_dict = json.loads(buffer)
+            #     print("Recieved dictionary:", command_dict)
+            #     break
+            # except json.JSONDecodeError:
+            #     print("keep going")
+            #     continue
+        else:
+           
+            break
+        
         # Send a response back
         #conn.sendall(b"Data received!")
 
@@ -85,7 +99,7 @@ while True:
         can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
         turn_vector = -turn_vector
         can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
-    elif (forward_vector > .2):\
+    elif (forward_vector > .2):
         #make both left and right motors to go forward.
         can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
         can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
@@ -96,7 +110,7 @@ while True:
         can0.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
         can1.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
 
-    clock.tick(1)
+    clock.tick(30)
 
-    # Close the connection
-    conn.close()
+conn.close()
+    
