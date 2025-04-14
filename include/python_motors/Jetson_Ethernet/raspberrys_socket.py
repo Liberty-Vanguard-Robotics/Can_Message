@@ -9,7 +9,7 @@ import can
 from pygame.locals import *
 import sys
 import pickle
-import json
+
 
 
 
@@ -64,6 +64,7 @@ while True:
             data = pickle.loads(serialize_data)
 
             print(f"Received data: {data}")
+            # send response back
             conn.sendall(pickle.dumps("Data received!"))
             break
             # buffer = ""
@@ -88,7 +89,29 @@ while True:
     forward_vector = data['y-axis']
     turn_vector = data['x-axis']
     #Postive means to the right of the joystick 
-    if (turn_vector > .2):
+    if (turn_vector > .2 and forward_vector > .2):
+        # This is just a linear transformation (inverted slope)
+        # basically turns our turn_vector into a ratio between
+        # 1 and -1. As turn_vector approaches 1 which allows it to turn
+        #gradually.
+        right_motor_ratio = -2 * turn_vector + 1
+        # this makes it a reletive to the forward_vector. aka ratio
+        right_motor_ratio = right_motor_ratio * forward_vector
+
+        can1.send(rmdv3.increasing_speed_set(rfront_id, right_motor_ratio,constMaxSpeed))
+
+        can0.send(rmdv3.increasing_speed_set(rfront_id, forward_vector, constMaxSpeed))
+    elif (turn_vector < -.2 and forward_vector > .2):
+        # Same thing as above but no negetive on the 2.
+        left_motor_ratio = 2 * turn_vector + 1
+        # this makes it a reletive to the forward_vector. aka ratio
+        left_motor_ratio = left_motor_ratio * forward_vector
+
+        #left motors
+        can1.send(rmdv3.increasing_speed_set(rfront_id, forward_vector,constMaxSpeed))
+        #right motors
+        can0.send(rmdv3.increasing_speed_set(rfront_id, left_motor_ratio, constMaxSpeed))
+    elif (turn_vector > .2):
         #left motors should go forward
         can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
         turn_vector = -turn_vector
@@ -113,4 +136,6 @@ while True:
     clock.tick(30)
 
 conn.close()
+os.system('sudo ifconfig can0 down')
+os.system('sudo ifconfig can1 down')
     
