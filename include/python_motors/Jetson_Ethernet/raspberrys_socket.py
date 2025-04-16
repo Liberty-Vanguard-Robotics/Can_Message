@@ -88,6 +88,7 @@ while True:
     top_speed = data['max_speed']
     forward_vector = data['y-axis']
     turn_vector = data['x-axis']
+    menu_button = data['Menu Button']
     #Postive means to the right of the joystick 
     if (turn_vector > .2 and forward_vector > .2):
         # This is just a linear transformation (inverted slope)
