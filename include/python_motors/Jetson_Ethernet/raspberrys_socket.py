@@ -133,6 +133,8 @@ while True:
         can0.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
         can1.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
 
+    if (data['Menu Button'] == 1):
+        break
     clock.tick(30)
 
 conn.close()
