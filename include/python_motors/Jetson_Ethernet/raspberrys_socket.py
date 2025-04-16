@@ -88,6 +88,7 @@ while True:
     top_speed = data['max_speed']
     forward_vector = data['y-axis']
     turn_vector = data['x-axis']
+    menu_button = data['Menu Button']
     #Postive means to the right of the joystick 
     if (turn_vector > .2 and forward_vector > .2):
         # This is just a linear transformation (inverted slope)
@@ -132,7 +133,9 @@ while True:
     else:
         can0.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
         can1.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
-
+    #if menu button is pressed exit program
+    if (menu_button == 1):
+        break
     clock.tick(30)
 
 conn.close()
