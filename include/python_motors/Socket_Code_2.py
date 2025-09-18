@@ -1,7 +1,10 @@
 import socket
+# GABRIEL MOCK: imported the controller class
+import include.python_motors.XBox_Controls.controller_class as controller_class
 
-printing_array = [] #Establishing the variable I'm importing
-
+# GABRIEL MOCK: Changed printing array (commented out below) to an object of the controller class
+#printing_array = [] #Establishing the variable I'm importing
+control = controller_class()
 def execute_command(command):
 	
 	print(f"Exectuting Commands: {command}")
@@ -19,4 +22,6 @@ while True:
 	if data:
 		execute_command(data)
 	client_socket.close()
-	printing_array = data #Assigning the recieved value to the variable I'm going to import
+	# GABRIEL MOCK: Changed printing array (commented out below) to the object of the controller class that was created earlier
+	#printing_array = data #Assigning the recieved value to the variable I'm going to import
+	control = data

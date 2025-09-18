@@ -1,7 +1,9 @@
+import os
+import sys
 import pygame
-import Socket_Code_2
-pygame.init()
+import controller_class
 
+pygame.init()
 
 # This is a simple class that will help us print to the screen.
 # It has nothing to do with the joysticks, just outputting the
@@ -45,70 +47,110 @@ def main():
     joysticks = {}
 
     # Set of variables and lists used to print the proper names or gather important data and button states
-    max_speed = Socket_Code_2.printing_array[1][0]
-    autonomous_state = Socket_Code_2.printing_array[1][1]
-    speed_left = Socket_Code_2.printing_array[1][2]
-    speed_right = Socket_Code_2.printing_array[1][3]
-    hats = Socket_Code_2.printing_array[0][0]
-    buttons = Socket_Code_2.printing_array[0][1]
-    axes = Socket_Code_2.printing_array[0][2]
-    jid = Socket_Code_2.printing_array[0][3]
-    name = Socket_Code_2.printing_array[0][4]
-    power_level = Socket_Code_2.printing_array[0][5]
-    guid = Socket_Code_2.printing_array[0][6]
-    joystick_count = Socket_Code_2.printing_array[0][7]
-    hat = Socket_Code_2.printing_array[2]
-    button = Socket_Code_2.printing_array[3]
-    axis = Socket_Code_2.printing_array[4]
-    button_values_list = ["A","B","X","Y","LB","RB","Display Button","Three Lines Button","XBOX Symbol Button"," Left Joystick Trigger","Right Joystick Trigger","Inbox Button"]
-    button_role_list = ["0","0","0","0","0","0","Shutdown","Autonomous","0","0","0","0",]
-    axis_values_list = ["Left Joystick Horizontal","Left Joystick Vertical","Left Trigger","Right Joystick Horizontal","Right Joystick Vertical","Right Trigger"]
-    axis_roles_list = ["Turning","Forward Motion","0","0","0","0"]
+    
+    control = controller_class()
 
     done = False
     while not done:
+        # Event processing step.
+        # Possible joystick events: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
+        # JOYBUTTONUP, JOYHATMOTION, JOYDEVICEADDED, JOYDEVICEREMOVED
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True  # Flag that we are done so we exit this loop.
+            if event.type == pygame.JOYBUTTONDOWN:
+                print(f"Joystick button {control.__button_values_list[event.button]} pressed.")
+                if event.button == 0:
+                    joystick = joysticks[event.instance_id]
+                    if joystick.rumble(0, 0.7, 500):
+                        print(f"Rumble effect played on joystick {event.instance_id}")
+
+            if event.type == pygame.JOYBUTTONUP:
+                print(f"Joystick button {control.__button_values_list[event.button]}  released.")
+
+            # Handle hotplugging
+            if event.type == pygame.JOYDEVICEADDED:
+                # This event will be generated when the program starts for every
+                # joystick, filling up the list without needing to create them manually.
+                joy = pygame.joystick.Joystick(event.device_index)
+                joysticks[joy.get_instance_id()] = joy
+                print(f"Joystick {joy.get_instance_id()} connencted")
+
+            if event.type == pygame.JOYDEVICEREMOVED:
+                del joysticks[event.instance_id]
+                print(f"Joystick {event.instance_id} disconnected")
 
         # Drawing step
         # First, clear the screen to white. Don't put other drawing commands
         # above this, or they will be erased with this command.
         
-        # This section creates the screen. Put this into the separate code
         screen.fill((255, 255, 255))
         text_print.reset()
+
+        # Get count of joysticks.
+        joystick_count = pygame.joystick.get_count()
 
         text_print.tprint(screen, f"Number of joysticks: {joystick_count}")
         text_print.indent()
 
         # For each joystick:
         for joystick in joysticks.values():
+            jid = joystick.get_instance_id()
+
             text_print.tprint(screen, f"Joystick {jid}")
             text_print.indent()
+
+            # Get the name from the OS for the controller/joystick.
+            name = joystick.get_name()
             text_print.tprint(screen, f"Joystick name: {name}")
+
+            guid = joystick.get_guid()
             text_print.tprint(screen, f"GUID: {guid}")
+
+            power_level = joystick.get_power_level()
             text_print.tprint(screen, f"Joystick's power level: {power_level}")
+
+            # Usually axis run in pairs, up/down for one, and left/right for
+            # the other. Triggers count as axes.
+            axes = joystick.get_numaxes()
             text_print.tprint(screen, f"Number of axes: {axes}")
             text_print.indent()
 
             for i in range(axes):
-                text_print.tprint(screen, f"Axis {i} value: {axis[i]:>6.3f}")
+                control.__axis[i] = joystick.get_axis(i)
+                text_print.tprint(screen, f"Axis {i} value: {control.__axis[i]:>6.3f}")
 
+            speed_left = (control.__axis[1] + control.__axis[0])*max_speed
+            speed_right = (control.__axis[1] - control.__axis[0])*max_speed
             text_print.tprint(screen, f"Left Side Speed = {speed_left:>6.3f}")
             text_print.tprint(screen, f"Right Side Speed = {speed_right:>6.3f}")
 
             text_print.unindent()
+
+            buttons = joystick.get_numbuttons()
             text_print.tprint(screen, f"Number of buttons: {buttons}")
             text_print.indent()
 
             for i in range(buttons):
-                if button[i] == 0:
-                    text_print.tprint(screen, f"Button {button_values_list[i]} ({button_role_list[i]}) value: OFF")
+                control.__button[i] = joystick.get_button(i)
+                if control.__button[i] == 0:
+                    text_print.tprint(screen, f"Button {control.__button_values_list[i]} ({control.__button_role_list[i]}) value: OFF")
                 else:
-                    text_print.tprint(screen, f"Button {button_values_list[i]} ({button_role_list[i]}) value: ON")
-                if button[6] == 1:
-                    pygame.quit() # The only "functionality" code in the print system, the shut down the code
-                    # in both the computer and the pi simultaneously
+                    text_print.tprint(screen, f"Button {control.__button_values_list[i]} ({control.__button_role_list[i]}) value: ON")
+
+                if control.__button[7] == 1:
+                    autonomous_state = 1
+                else:
+                    autonomous_state = 0
+
+                if control.__button[6] == 1:
+                    pygame.quit()
+                    sys.exit()
 
             text_print.unindent()
+
+            hats = joystick.get_numhats()
             text_print.tprint(screen, f"Number of hats: {hats}")
             text_print.indent()
 
@@ -116,7 +158,12 @@ def main():
             # get_axis(). Position is a tuple of int values (x, y).
 
             for i in range(hats):
+                hat = joystick.get_hat(i)
                 text_print.tprint(screen, f"Hat {i} value: {str(hat)}")
+                if hat == (0,1):
+                    max_speed = max_speed + 1
+                elif hat == (0,-1):
+                    max_speed = max_speed - 1 
             text_print.unindent()
 
             text_print.unindent()
