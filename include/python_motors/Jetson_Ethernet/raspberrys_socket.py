@@ -75,7 +75,7 @@ while True:
             #     break
             # except json.JSONDecodeError:
             #     print("keep going")
-            #     continue
+            #     continue0
         else:
            
             break
@@ -85,57 +85,67 @@ while True:
 
     # data contains 3 parameters. y-axis and x-axis of joystick,
     # max_speed
-    top_speed = data['max_speed']
-    forward_vector = data['y-axis']
-    turn_vector = data['x-axis']
-    menu_button = data['Menu Button']
-    #Postive means to the right of the joystick 
-    if (turn_vector > .2 and forward_vector > .2):
-        # This is just a linear transformation (inverted slope)
-        # basically turns our turn_vector into a ratio between
-        # 1 and -1. As turn_vector approaches 1 which allows it to turn
-        #gradually.
-        right_motor_ratio = -2 * turn_vector + 1
-        # this makes it a reletive to the forward_vector. aka ratio
-        right_motor_ratio = right_motor_ratio * forward_vector
-
-        can1.send(rmdv3.increasing_speed_set(rfront_id, right_motor_ratio,constMaxSpeed))
-
-        can0.send(rmdv3.increasing_speed_set(rfront_id, forward_vector, constMaxSpeed))
-    elif (turn_vector < -.2 and forward_vector > .2):
-        # Same thing as above but no negetive on the 2.
-        left_motor_ratio = 2 * turn_vector + 1
-        # this makes it a reletive to the forward_vector. aka ratio
-        left_motor_ratio = left_motor_ratio * forward_vector
-
-        #left motors
-        can1.send(rmdv3.increasing_speed_set(rfront_id, forward_vector,constMaxSpeed))
-        #right motors
-        can0.send(rmdv3.increasing_speed_set(rfront_id, left_motor_ratio, constMaxSpeed))
-    elif (turn_vector > .2):
-        #left motors should go forward
-        can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
-        turn_vector = -turn_vector
-        #right motors go backwards
-        can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
-    elif (turn_vector < -.2):
-        turn_vector = abs(turn_vector)
-        can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
-        turn_vector = -turn_vector
-        can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
-    elif (forward_vector > .2):
-        #make both left and right motors to go forward.
-        can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
-        can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
-    elif (forward_vector < -.2):
-        can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
-        can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
-    else:
+    if not data:
         can0.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
         can1.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
+    else:
+        top_speed = data['max_speed']
+        forward_vector = data['y-axis']
+        turn_vector = data['x-axis']
+        menu_button = data['Menu Button']
+        #Postive means to the right of the joystick 
+        if (turn_vector > .2 and forward_vector > .2):
+            # This is just a linear transformation (inverted slope)
+            # basically turns our turn_vector into a ratio between
+            # 1 and -1. As turn_vector approaches 1 which allows it to turn
+            #gradually.
+            right_motor_ratio = -2 * turn_vector + 1
+            # this makes it a reletive to the forward_vector. aka ratio
+            right_motor_ratio = right_motor_ratio * forward_vector
+            #make negetive to get it to spin in the opposite direction because motor on opposite side face different directions
+            right_motor_ratio = -right_motor_ratio
+            can1.send(rmdv3.increasing_speed_set(rfront_id, right_motor_ratio,constMaxSpeed))
 
-    if (data['Menu Button'] == 1):
-        break
+            can0.send(rmdv3.increasing_speed_set(rfront_id, forward_vector, constMaxSpeed))
+        elif (turn_vector < -.2 and forward_vector > .2):
+        # Same thing as above but no negetive on the 2.
+            left_motor_ratio = 2 * turn_vector + 1
+        # this makes it a reletive to the forward_vector. aka ratio
+            left_motor_ratio = left_motor_ratio * forward_vector
+        #make negetive to get it to spin in the opposite direction because motor on opposite side face different directions
+            left_motor_ratio = -left_motor_ratio
+        #left motors
+            can1.send(rmdv3.increasing_speed_set(rfront_id, forward_vector,constMaxSpeed))
+        #right motors
+            can0.send(rmdv3.increasing_speed_set(rfront_id, left_motor_ratio, constMaxSpeed))
+        elif (turn_vector > .2):
+            #left motors should go forward
+            can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
+            turn_vector = turn_vector
+        #right motors go backwards
+            can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
+        elif (turn_vector < -.2):
+            turn_vector = abs(turn_vector)
+            can0.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
+        # they should automatically turn in the oppposite direction.
+            turn_vector = turn_vector
+            can1.send(rmdv3.increasing_speed_set(rfront_id,turn_vector,constMaxSpeed))
+        elif (forward_vector > .2):
+        #make both left and right motors to go forward.
+            can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
+            forward_vector = -forward_vector
+            can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
+        elif (forward_vector < -.2):
+
+            can0.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
+            forward_vector = -forward_vector
+            can1.send(rmdv3.increasing_speed_set(rfront_id,forward_vector,constMaxSpeed))
+        else:
+            can0.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
+            can1.send(rmdv3.increasing_speed_set(rfront_id,0,constMaxSpeed))
+
+        if (data['Menu Button'] == 1):
+            break
     clock.tick(30)
 
 conn.close()
